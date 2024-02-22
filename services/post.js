@@ -1,6 +1,14 @@
 const Post = require('../models/post');
 
-
+/**
+ * Creates a new post.
+ *
+ * @param {string} content - The content of the post.
+ * @param {string} img - The URL of the image attached to the post.
+ * @param {string} userId - The ID of the user who created the post.
+ * @param {Date} [date] - Optional. The date of the post.
+ * @returns {Promise} A Promise that resolves to the created post.
+ */
 const createPost = async (content, img, userId, date) => {
     const post = new Post({
         content: content, img: img, userId: userId
@@ -10,14 +18,32 @@ const createPost = async (content, img, userId, date) => {
     return await post.save();
 };
 
+/**
+ * Retrieves a post by its ID.
+ *
+ * @param {string} id - The ID of the post.
+ * @returns {Promise} A Promise that resolves to the post with the specified ID.
+ */
 const getPostById = async (id) => {
     return await Post.findById(id);
 };
 
+/**
+ * Retrieves all posts.
+ *
+ * @returns {Promise} A Promise that resolves to an array of all posts.
+ */
 const getPosts = async () => {
     return await Post.find({});
 };
 
+/**
+ * Updates the content of a post.
+ *
+ * @param {string} id - The ID of the post.
+ * @param {string} content - The new content of the post.
+ * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
+ */
 const updatePostContent = async (id, content) => {
     const post = await getPostById(id);
     if (!post) return null;
@@ -26,6 +52,13 @@ const updatePostContent = async (id, content) => {
     return post;
 };
 
+/**
+ * Updates the image of a post.
+ *
+ * @param {string} id - The ID of the post.
+ * @param {string} img - The new URL of the image.
+ * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
+ */
 const updatePostImg = async (id, img) => {
     const post = await getPostById(id);
     if (!post) return null;
@@ -34,6 +67,12 @@ const updatePostImg = async (id, img) => {
     return post;
 };
 
+/**
+ * Deletes a post by its ID.
+ *
+ * @param {string} id - The ID of the post.
+ * @returns {Promise} A Promise that resolves to the deleted post or null if post not found.
+ */
 const deletePost = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
@@ -41,12 +80,24 @@ const deletePost = async (id) => {
     return post;
 };
 
+/**
+ * Retrieves the author of a post.
+ *
+ * @param {string} id - The ID of the post.
+ * @returns {Promise} A Promise that resolves to an object containing the ID of the post's author.
+ */
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
     return {userId: post.userId};
 };
 
-
-module.exports = {createPost, getPostById, getPosts, updatePostContent, updatePostImg,
-    deletePost, getAuthor}
+module.exports = {
+    createPost,
+    getPostById,
+    getPosts,
+    updatePostContent,
+    updatePostImg,
+    deletePost,
+    getAuthor
+};

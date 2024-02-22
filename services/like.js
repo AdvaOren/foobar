@@ -1,42 +1,82 @@
 const Like = require('../models/Like');
 
-
+/**
+ * Adds a like to a post.
+ *
+ * @param {string} userId - The ID of the user who liked the post.
+ * @param {string} postId - The ID of the post.
+ * @returns {Promise} A Promise that resolves to the created like.
+ */
 const addLike = async (userId, postId) => {
     const like = new Like({
-        userId: userId, postId: postId});
+        userId: userId, postId: postId
+    });
     return await like.save();
 };
 
+/**
+ * Removes a like from a post.
+ *
+ * @param {string} userId - The ID of the user who liked the post.
+ * @param {string} postId - The ID of the post.
+ * @returns {Promise} A Promise that resolves to null.
+ */
 const removeLike = async (userId, postId) => {
-    await Like.deleteOne({ userId: userId, postId: postId});
+    await Like.deleteOne({userId: userId, postId: postId});
     return null;
 };
 
+/**
+ * Removes all likes from a post.
+ *
+ * @param {string} postId - The ID of the post.
+ * @returns {Promise} A Promise that resolves to null.
+ */
+const removeLikesByPost = async (postId) => {
+    await Like.deleteMany({postId: postId});
+    return null;
+};
 
+/**
+ * Removes all likes by a user.
+ *
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise} A Promise that resolves to null.
+ */
+const removeLikesByUser = async (userId) => {
+    await Like.deleteMany({userId: userId});
+    return null;
+};
+
+/**
+ * Checks if a user has liked a post.
+ *
+ * @param {string} userId - The ID of the user.
+ * @param {string} postId - The ID of the post.
+ * @returns {Promise} A Promise that resolves to a boolean indicating whether the user has liked the post or not.
+ */
 const checkIfLike = async (userId, postId) => {
-    const like = await Like.findOne({ userId: userId, postId: postId});
-    if (!like)
-        return false;
+    const like = await Like.findOne({userId: userId, postId: postId});
+    if (!like) return false;
     return true;
+};
 
-}
-
+/**
+ * Retrieves the amount of likes by a user.
+ *
+ * @param {string} user - The ID of the user.
+ * @returns {Promise} A Promise that resolves to the number of likes.
+ */
 const getLikeAmount = async (user) => {
-    const friends =await  Like.find({
-        $or: [
-            { user1: user},
-            { user2: user}
-        ]})
-    if (!friends)
-        return {friends : []};
-    const userFriends = [];
-    friends.forEach((value) => {
-        if (value.user1 === user)
-            userFriends.push(value.user2);
-        else
-            userFriends.push(value.user1);
-    })
-    return userFriends;
-}
+    const likes = await Like.find({userId: user});
+    return {likes: likes.length};
+};
 
-module.exports = {createFriends, deleteFriends, checkIfFriends, getFriendsOfUser}
+module.exports = {
+    addLike,
+    removeLike,
+    removeLikesByPost,
+    removeLikesByUser,
+    checkIfLike,
+    getLikeAmount
+};
