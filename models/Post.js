@@ -10,6 +10,10 @@ const Post = new Schema({
         type: Buffer,
         required: true
     },
+    userId: {
+        type: String,
+        required: true
+    },
     date:  {
         type: Date,
         default: Date.now
