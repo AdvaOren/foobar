@@ -4,7 +4,7 @@ const Post = require('../models/post');
  * Creates a new post.
  *
  * @param {string} content - The content of the post.
- * @param {string} img - The URL of the image attached to the post.
+ * @param {buffer} img - The image attached to the post.
  * @param {string} userId - The ID of the user who created the post.
  * @param {Date} [date] - Optional. The date of the post.
  * @returns {Promise} A Promise that resolves to the created post.
@@ -25,6 +25,7 @@ const createPost = async (content, img, userId, date) => {
  * @returns {Promise} A Promise that resolves to the post with the specified ID.
  */
 const getPostById = async (id) => {
+    if (id.length !== 24) return null;
     return await Post.findById(id);
 };
 
@@ -56,7 +57,7 @@ const updatePostContent = async (id, content) => {
  * Updates the image of a post.
  *
  * @param {string} id - The ID of the post.
- * @param {string} img - The new URL of the image.
+ * @param {buffer} img - The image.
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostImg = async (id, img) => {
@@ -92,6 +93,18 @@ const getAuthor = async (id) => {
     return {userId: post.userId};
 };
 
+/**
+ * Retrieves the last five post.
+ *
+ * @returns {Promise} A Promise that resolves to an object containing the posts
+ */
+const latestFivePost = async () => {
+    const postList = await Post.find({}).sort({date: -1}).limit(5);
+    return postList;
+}
+
+
+
 module.exports = {
     createPost,
     getPostById,
@@ -99,5 +112,6 @@ module.exports = {
     updatePostContent,
     updatePostImg,
     deletePost,
-    getAuthor
+    getAuthor,
+    latestFivePost,
 };

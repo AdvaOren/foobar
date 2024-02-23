@@ -52,6 +52,7 @@ const getCommentsByPostAndUser = async (postId, userId) => {
  * @returns {Promise} A Promise that resolves to the comment with the specified ID.
  */
 const getCommentById = async (id) => {
+    if (id.length !== 24) return null;
     return await Comment.findById(id);
 };
 

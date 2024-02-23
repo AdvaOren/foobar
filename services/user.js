@@ -7,7 +7,7 @@ const User = require('../models/User');
  * @param {string} firstName - The user's first name.
  * @param {string} lastName - The user's last name.
  * @param {string} password - The user's password.
- * @param {string} img - The user's image buffer.
+ * @param {buffer} img - The user's image buffer.
  * @returns {Promise} A Promise that resolves to the created user or null if email already exists.
  */
 const createUser = async (email, firstName, lastName, password, img) => {
@@ -83,7 +83,7 @@ const updateUser = async (id, email, firstName, lastName, password) => {
  * Updates a user's profile image.
  *
  * @param {string} id - The user's ID.
- * @param {string} img - The URL of the new image.
+ * @param {buffer} img - The new image.
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
 const updateUserImg = async (id, img) => {

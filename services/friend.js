@@ -1,4 +1,5 @@
 const Friends = require('../models/Friends');
+const Friend = require("../models/Friends");
 
 /**
  * Creates a new friendship between two users.
@@ -85,4 +86,48 @@ const getFriendsOfUser = async (user) => {
     return userFriends;
 };
 
-module.exports = {createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, getFriendsOfUser};
+/**
+ * Retrieves the last 20 posts for user
+ *
+ * @param id of user that want posts
+ * @returns {Promise<Aggregate<Array<any>>>}
+ */
+const getLastPostOfFriends = async (id) => {
+    const posts = await Friends.aggregate([
+        {
+            $lookup: {
+                from: "posts",
+                let: { user1: "$user1", user2: "$user2" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $or: [
+                                            { $eq: ["$userId", "$$user1"] },
+                                            { $eq: ["$userId", "$$user2"] }
+                                        ]},
+                                    { $or: [
+                                            { $eq: ["$$user1", id] },
+                                            { $eq: ["$$user2", id] }
+                                        ]}
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "matchedPosts"
+            }
+        },
+        {
+            $unwind: "$matchedPosts"
+        },
+        {
+            $replaceRoot: { newRoot: "$matchedPosts" }
+        }
+    ]).sort({date: -1}).limit(20)
+    return posts;
+}
+
+module.exports = {createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, getFriendsOfUser,
+    getLastPostOfFriends};
