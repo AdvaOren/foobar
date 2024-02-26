@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const fServices = require('../services/friend');
 
 /**
  * Creates a new post.
@@ -30,12 +31,12 @@ const getPostById = async (id) => {
 };
 
 /**
- * Retrieves all posts.
+ * Retrieves all posts of a specific user.
  *
- * @returns {Promise} A Promise that resolves to an array of all posts.
+ * @returns {Promise} A Promise that resolves to an array of all posts of user.
  */
-const getPosts = async () => {
-    return await Post.find({});
+const getPostsByUser = async (userId) => {
+    return await Post.find({userId: userId});
 };
 
 /**
@@ -98,8 +99,11 @@ const getAuthor = async (id) => {
  *
  * @returns {Promise} A Promise that resolves to an object containing the posts
  */
-const latestFivePost = async () => {
-    const postList = await Post.find({}).sort({date: -1}).limit(5);
+const latestFivePost = async (id) => {
+    const friends = await fServices.getFriendsOfUser(id);
+    friends.push(id);
+    const postList = await Post.find({userId:{"$nin":friends}})
+        .sort({date: -1}).limit(5).lean()
     return postList;
 }
 
@@ -108,10 +112,10 @@ const latestFivePost = async () => {
 module.exports = {
     createPost,
     getPostById,
-    getPosts,
+    getPostsByUser,
     updatePostContent,
     updatePostImg,
     deletePost,
     getAuthor,
-    latestFivePost,
+    latestFivePost
 };

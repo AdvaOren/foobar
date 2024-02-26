@@ -2,13 +2,17 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 const Friends = new Schema({
-    user1: {
+    requester: {
         type: String,
         required: true
     },
-    user2: {
+    requested: {
         type: String,
         required: true
     },
+    status: {
+        type: String,
+        required: true
+    }
 });
 module.exports = mongoose.model('Friends', Friends);

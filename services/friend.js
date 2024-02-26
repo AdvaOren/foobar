@@ -1,32 +1,28 @@
 const Friends = require('../models/Friends');
-const Friend = require("../models/Friends");
 
 /**
  * Creates a new friendship between two users.
  *
- * @param {string} user1 - The ID of the first user.
- * @param {string} user2 - The ID of the second user.
+ * @param {string} requester - The ID of the first user.
+ * @param {string} requested - The ID of the second user.
  * @returns {Promise} A Promise that resolves to the created friendship.
  */
-const createFriends = async (user1, user2) => {
+const createFriends = async (requester, requested) => {
     const friends = new Friends({
-        user1: user1, user2: user2});
+        requester: requester, requested: requested,status:"wait"});
     return await friends.save();
 };
 
 /**
  * Deletes a friendship between two users.
  *
- * @param {string} user1 - The ID of the first user.
- * @param {string} user2 - The ID of the second user.
+ * @param {string} requester - The ID of the first user.
+ * @param {string} requested - The ID of the second user.
  * @returns {Promise} A Promise that resolves to null.
  */
-const deleteFriends = async (user1, user2) => {
-    await Friends.deleteOne({
-        $or: [
-            { user1: user1, user2: user2 },
-            { user2: user2, user1: user1 }
-        ]});
+const deleteFriends = async (requester, requested) => {
+    await Friends.deleteOne({ requester: requester, requested: requested });
+    await Friends.deleteOne({ requester: requested, requested: requester });
     return null;
 };
 
@@ -39,8 +35,8 @@ const deleteFriends = async (user1, user2) => {
 const deleteAllFriendsByUser = async (user) => {
     await Friends.deleteMany({
         $or: [
-            { user1: user },
-            { user2: user }
+            { requester: user },
+            { requested: user }
         ]});
     return null;
 };
@@ -48,16 +44,13 @@ const deleteAllFriendsByUser = async (user) => {
 /**
  * Checks if two users are friends.
  *
- * @param {string} user1 - The ID of the first user.
- * @param {string} user2 - The ID of the second user.
+ * @param {string} requester - The ID of the first user.
+ * @param {string} requested - The ID of the second user.
  * @returns {Promise} A Promise that resolves to a boolean indicating whether they are friends or not.
  */
-const checkIfFriends = async (user1, user2) => {
-    const friends = await Friends.findOne({
-        $or: [
-            { user1: user1, user2: user2 },
-            { user2: user2, user1: user1 }
-        ]});
+const checkIfFriends = async (requester, requested) => {
+    const friends = await Friends.findOne(
+            { requester: requester, requested: requested, status: "approve" });
     if (!friends) return false;
     return true;
 };
@@ -69,48 +62,56 @@ const checkIfFriends = async (user1, user2) => {
  * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
  */
 const getFriendsOfUser = async (user) => {
-    const friends = await Friends.find({
-        $or: [
-            { user1: user },
-            { user2: user }
-        ]});
+    const friends = await Friends.find({ requester: user , status: "approve"});
     if (!friends)
         return {friends : []};
     const userFriends = [];
     friends.forEach((value) => {
-        if (value.user1 === user)
-            userFriends.push(value.user2);
+        if (value.requester === user)
+            userFriends.push(value.requested);
         else
-            userFriends.push(value.user1);
+            userFriends.push(value.requested);
     });
     return userFriends;
 };
 
 /**
+ *
+ * @param requester the requester of the friendship
+ * @param requested the requested of the friendship
+ * @returns {Promise} A Promise that resolves to success of accept the frienship ot not.
+ */
+const acceptFriendship = async (requester, requested) => {
+    const friend = await Friends.findOne({requested: requested, requester: requester, status: "wait"})
+    if (!friend) return false;
+    friend.status = "approve";
+    const friend2 = await createFriends(requested,requester);
+    friend2.status = "approve";
+    await friend.save();
+    await friend2.save();
+    return true;
+}
+
+/**
  * Retrieves the last 20 posts for user
  *
  * @param id of user that want posts
- * @returns {Promise<Aggregate<Array<any>>>}
+ * @returns {Promise} A Promise that resolves to array of the 20 last post of his friends
  */
 const getLastPostOfFriends = async (id) => {
     const posts = await Friends.aggregate([
         {
             $lookup: {
                 from: "posts",
-                let: { user1: "$user1", user2: "$user2" },
+                let: { requester: "$requester", requested: "$requested", status: "$status" },
                 pipeline: [
                     {
                         $match: {
                             $expr: {
                                 $and: [
-                                    { $or: [
-                                            { $eq: ["$userId", "$$user1"] },
-                                            { $eq: ["$userId", "$$user2"] }
-                                        ]},
-                                    { $or: [
-                                            { $eq: ["$$user1", id] },
-                                            { $eq: ["$$user2", id] }
-                                        ]}
+                                    { $eq: ["$userId", "$$requested"] } ,
+                                    { $eq: ["$$requester", id] },
+                                    { $eq: ["$$status", "approve"]}
                                 ]
                             }
                         }
@@ -129,5 +130,9 @@ const getLastPostOfFriends = async (id) => {
     return posts;
 }
 
-module.exports = {createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, getFriendsOfUser,
-    getLastPostOfFriends};
+
+module.exports = {createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
+    getFriendsOfUser,
+    getLastPostOfFriends,
+    latestFivePost
+    };
