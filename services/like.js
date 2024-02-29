@@ -64,11 +64,11 @@ const checkIfLike = async (userId, postId) => {
 /**
  * Retrieves the amount of likes by a user.
  *
- * @param {string} user - The ID of the user.
+ * @param {string} postId - The ID of the user.
  * @returns {Promise} A Promise that resolves to the number of likes.
  */
-const getLikeAmount = async (user) => {
-    const likes = await Like.find({userId: user});
+const getLikeAmount = async (postId) => {
+    const likes = await Like.find({postId: postId});
     return {likes: likes.length};
 };
 

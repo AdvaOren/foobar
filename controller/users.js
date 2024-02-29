@@ -1,5 +1,6 @@
-//get called from router, call service;
 const user = require("../services/user.js");
+const like = require("../services/like");
+const comment = require("../services/comment");
 
 async function createUser(req, res) {
     const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img)
@@ -24,9 +25,13 @@ const updateUserImg = async (req, res) => {
     res.json(await user.updateUserImg(req.params.id, req.params.img));
 }
 const deleteUser = async (req, res) => {
+    await like.removeLikesByUser(req.params.id);
+    await comment.deleteCommentsByUser(req.params.id)
     res.json(await user.deleteUser(req.params.id));
 }
 const deleteUserByEmail = async (req, res) => {
+    await like.removeLikesByUser(req.params.id);
+    await comment.deleteCommentsByUser(req.params.id)
     res.json(await user.deleteUserByEmail(req.params.email));
 }
 module.exports =
