@@ -16,7 +16,8 @@ const createUser = async (email, firstName, lastName, password, img) => {
         return null;
     const user = new User({
         email: email, firstName: firstName, lastName: lastName, password: password,
-        img: img});
+        img: img
+    });
     return await user.save();
 };
 
@@ -119,7 +120,15 @@ const deleteUserByEmail = async (email) => {
     await user.remove();
     return user;
 };
-
+/**
+ * Finds a user by his email address.
+ *
+ * @param {string} email - The user's email.
+ * @returns {Promise} A Promise that resolves to the user with the specified email.
+ */
+const findUserEx = async (email, password) => {
+    return await User.findOne({email: email, password: password});
+};
 module.exports = {
     createUser,
     getUserByEmail,
@@ -128,5 +137,6 @@ module.exports = {
     deleteUser,
     deleteUserByEmail,
     getEmails,
-    updateUserImg
+    updateUserImg,
+    findUserEx
 };

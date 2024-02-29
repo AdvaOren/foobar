@@ -25,12 +25,12 @@ router.get('users/:id/posts/:pid', post.getPostById);
 
 // Retrieves all posts.
 router.get('users/allPosts', post.getPosts);
-module.exports =
-    router
+
 
 // Retrieves the author of a post by post id.
 router.get('users/posts/:pid', post.getAuthor);
-
+module.exports =
+    router
 
 
 
