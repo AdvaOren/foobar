@@ -1,13 +1,13 @@
 //get called from router, call service;
-import user from "../services/user"
+const user = require("../services/user.js");
 
 async function createUser(req, res) {
-    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.password, req.body.img)
+    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img)
     res.json(newUser.id);
 }
 
 const getUserByEmail = async (req, res) => {
-    const found = await user.getUserByEmail(req.query.email);
+    res.json(await user.getUserByEmail(req.query.email));
 };
 
 const getUserById = async (req, res) => {

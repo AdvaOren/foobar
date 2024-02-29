@@ -19,3 +19,5 @@ router.get('users/:id/friends/:fid', friend.deleteFriends);
 
 
 
+module.exports =
+    router

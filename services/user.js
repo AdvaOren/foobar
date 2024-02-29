@@ -12,7 +12,7 @@ const User = require('../models/User');
  */
 const createUser = async (email, firstName, lastName, password, img) => {
     // Check if the email already exists
-    if (getUserByEmail(email))
+    if (await getUserByEmail(email))
         return null;
     const user = new User({
         email: email, firstName: firstName, lastName: lastName, password: password,

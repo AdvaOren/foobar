@@ -95,10 +95,9 @@ const acceptFriendship = async (requester, requested) => {
 /**
  * Retrieves the last 20 posts for user
  *
- * @param id of user that want posts
  * @returns {Promise} A Promise that resolves to array of the 20 last post of his friends
  */
-const getLastPostOfFriends = async (id) => {
+const getLastPostOfFriends = async () => {
     const posts = await Friends.aggregate([
         {
             $lookup: {
@@ -134,5 +133,4 @@ const getLastPostOfFriends = async (id) => {
 module.exports = {createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
     getFriendsOfUser,
     getLastPostOfFriends,
-    latestFivePost
     };

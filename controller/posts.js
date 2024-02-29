@@ -1,5 +1,5 @@
-const posts = require("../services/posts.js");
-const friends = require("../services/friends");
+const posts = require("../services/post.js");
+const friends = require("../services/friend");
 const like = require("../services/like.js");
 const comment = require("../services/comment.js");
 
@@ -38,10 +38,10 @@ const get25Posts = async (req, res) => {
  * func name: deletePost
  * action: delete post and its likes and comments.
  * **/
-const deletePost = (req, res) => {
+const deletePost = async (req, res) => {
     const post = posts.deletePost(req.params.postId);
-    like.deleteLikesByPost(req.params.postId);
-    comment.deleteCommentsByPost(req.params.postId)
+    await like.deleteLikesByPost(req.params.postId);
+    await comment.deleteCommentsByPost(req.params.postId)
     res.json(post);
 }
 module.exports = {

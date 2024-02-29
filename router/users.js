@@ -31,16 +31,5 @@ router.delete('/users/:id', user.deleteUser);
 // Deletes a user by his email address.
 router.delete('/users/:email', user.deleteUserByEmail);
 
-
-
-
-
-
-
-
-
-
-
-
-
-export default router;
+module.exports =
+    router
