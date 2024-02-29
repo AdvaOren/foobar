@@ -9,8 +9,8 @@ const createPost = async (req, res) => {
 const getPostById = async (req, res) => {
     res.json(await posts.getPostById(req.query.id))
 }
-const getPosts = async (req, res) => {
-    res.json(await posts.getPosts())
+const getPostsByUser = async (req, res) => {
+    res.json(await posts.getPostsByUser(req.query.userId))
 }
 const updatePostContent = async (req, res) => {
     res.json(await posts.updatePostContent(req.params.id, req.params.content))
@@ -47,7 +47,7 @@ const deletePost = async (req, res) => {
 module.exports = {
     createPost,
     getPostById,
-    getPosts,
+    getPostsByUser,
     updatePostContent,
     updatePostImg,
     deletePost,

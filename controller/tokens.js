@@ -4,7 +4,7 @@ const postController = require("../controller/posts");
 const userController = require("../controller/users");
 const userService = require("../services/user");
 
-const isLoggedIn = (req, res) => {
+const isLoggedIn = (req, res, next) => {
 // If the request has an authorization header
     if (req.headers.authorization) {
 // Extract the token from that header
@@ -13,7 +13,7 @@ const isLoggedIn = (req, res) => {
 // Verify the token is valid
             const data = jwt.verify(token, key);
 // Token validation was successful. Continue to the actual function (index)
-            return res.status(200);
+            next();
         } catch (err) {
             return res.status(401).send("Invalid Token");
         }
@@ -22,7 +22,7 @@ const isLoggedIn = (req, res) => {
 }
 const processLogin = (req, res) => {
 // Check credentials
-    if (userService.findUserEx(req.body.email,req.body.password)) {
+    if (userService.findUserEx(req.body.email, req.body.password)) {
 // We now want to generate the JWT.
 // The token can contain whatever information we desire.
 // However, do not put sensitive information there, like passwords.
@@ -35,4 +35,7 @@ const processLogin = (req, res) => {
     } else
 // Incorrect username/password. The user should try again.
         res.status(404).send('Invalid username and/or password')
+}
+module.exports = {
+    isLoggedIn, processLogin
 }
