@@ -12,23 +12,23 @@ const router = express.Router();
 
 
 // Creates a new post.
-router.post('/users/:id/posts', post.createPost);
+router.post('/:id/posts', post.createPost);
 
 // Updates the content of a post.
-router.put('users/:id/posts/:pid', post.updatePostContent);
+router.put('/:id/posts/:pid', post.updatePostContent);
 
 // Deletes a post by its ID.
-router.delete('users/:id/posts/:pid', post.deletePost);
+router.delete('/:id/posts/:pid', post.deletePost);
 
 // Retrieves a post by its ID.
-router.get('users/:id/posts/:pid', post.getPostById);
+router.get('/:id/posts/:pid', post.getPostById);
 
 // Retrieves all posts.
-router.get('users/allPosts', post.getPosts);
+router.get('/allPosts', post.getPosts);
 
 
 // Retrieves the author of a post by post id.
-router.get('users/posts/:pid', post.getAuthor);
+router.get('/posts/:pid', post.getAuthor);
 module.exports =
     router
 

@@ -2,7 +2,7 @@
 const user = require("../services/user.js");
 
 async function createUser(req, res) {
-    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img)
+    await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img);
     res.json(newUser.id);
 }
 
@@ -29,7 +29,11 @@ const deleteUser = async (req, res) => {
 const deleteUserByEmail = async (req, res) => {
     res.json(await user.deleteUserByEmail(req.params.email));
 }
+const findUserExists = async (req, res) => {
+    res.json(await user.findUserEx(req.params.email, req.params.password));
+}
+
 module.exports =
-    {
-        createUser, getUserByEmail, getUserById, getEmails, updateUser, updateUserImg, deleteUser, deleteUserByEmail
-    }
+{
+    createUser, getUserByEmail, getUserById, getEmails, updateUser, updateUserImg, deleteUser, deleteUserByEmail, findUserExists
+}
