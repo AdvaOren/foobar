@@ -27,7 +27,7 @@ const createPost = async (content, img, userId, date) => {
  */
 const getPostById = async (id) => {
     if (id.length !== 24) return null;
-    return await Post.findById(id);
+    return await Post.findById(id).lean();
 };
 
 /**
@@ -36,7 +36,7 @@ const getPostById = async (id) => {
  * @returns {Promise} A Promise that resolves to an array of all posts of user.
  */
 const getPostsByUser = async (userId) => {
-    return await Post.find({userId: userId});
+    return await Post.find({userId: userId}).lean();
 };
 
 /**
@@ -91,7 +91,7 @@ const deletePost = async (id) => {
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    return {userId: post.userId};
+    return {userId: post.userId}.lean();
 };
 
 /**
@@ -104,7 +104,7 @@ const latestFivePost = async () => {
     friends.push(id);
     const postList = await Post.find({userId:{"$nin":friends}})
         .sort({date: -1}).limit(5).lean()
-    return postList;
+    return postList.lean();
 }
 
 

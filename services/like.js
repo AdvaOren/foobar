@@ -69,7 +69,7 @@ const checkIfLike = async (userId, postId) => {
  */
 const getLikeAmount = async (postId) => {
     const likes = await Like.find({postId: postId});
-    return {likes: likes.length};
+    return {likes: likes.length}.lean();
 };
 
 module.exports = {

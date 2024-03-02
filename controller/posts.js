@@ -39,7 +39,7 @@ const getAuthor = async (req, res) => {
  * */
 const get25Posts = async (req, res) => {
     var list = await posts.latestFivePost();
-    list.concat( await friends.getLastPostOfFriends());
+    list.concat(await friends.getLastPostOfFriends());
     res.json(list);
 
 }
@@ -48,6 +48,10 @@ const get25Posts = async (req, res) => {
  * action: delete post and its likes and comments.
  * **/
 const deletePost = async (req, res) => {
+    const postAuthor = await posts.getAuthor(req.params.postId)
+    if (req.params.id !== postAuthor.id) {
+        return res.status(500).json({errors: ["unable to delete, user is not the author"]});
+    }
     const post = posts.deletePost(req.params.postId);
     await like.removeLikesByPost(req.params.postId);
     await comment.deleteCommentsByPost(req.params.postId)
