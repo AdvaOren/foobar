@@ -21,7 +21,7 @@ const createComment = async (text, postId, userId) => {
  * @returns {Promise} A Promise that resolves to an array of comments made by the user.
  */
 const getCommentsByUser = async (userId) => {
-    return await Comment.find({userId: userId});
+    return await Comment.find({userId: userId}).lean();
 };
 
 /**
@@ -31,7 +31,7 @@ const getCommentsByUser = async (userId) => {
  * @returns {Promise} A Promise that resolves to an array of comments associated with the post.
  */
 const getCommentsByPost = async (postId) => {
-    return await Comment.find({postId: postId});
+    return await Comment.find({postId: postId}).lean();
 };
 
 /**
@@ -42,7 +42,7 @@ const getCommentsByPost = async (postId) => {
  * @returns {Promise} A Promise that resolves to an array of comments associated with the post and user.
  */
 const getCommentsByPostAndUser = async (postId, userId) => {
-    return await Comment.find({postId: postId, userId: userId});
+    return await Comment.find({postId: postId, userId: userId}).lean();
 };
 
 /**
@@ -53,7 +53,7 @@ const getCommentsByPostAndUser = async (postId, userId) => {
  */
 const getCommentById = async (id) => {
     if (id.length !== 24) return null;
-    return await Comment.findById(id);
+    return await Comment.findById(id).lean();
 };
 
 /**

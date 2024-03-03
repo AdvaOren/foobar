@@ -72,7 +72,7 @@ const getFriendsOfUser = async (user) => {
         else
             userFriends.push(value.requested);
     });
-    return userFriends;
+    return userFriends.lean();
 };
 
 /**
@@ -126,7 +126,7 @@ const getLastPostOfFriends = async () => {
             $replaceRoot: { newRoot: "$matchedPosts" }
         }
     ]).sort({date: -1}).limit(20)
-    return posts;
+    return posts.lean();
 }
 
 

@@ -29,7 +29,7 @@ const createUser = async (email, firstName, lastName, password, img) => {
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
 const getUserByEmail = async (email) => {
-    return await User.findOne({ email: email });
+    return await User.findOne({email: email}).lean();
 };
 
 /**
@@ -41,7 +41,7 @@ const getUserByEmail = async (email) => {
 const getUserById = async (id) => {
     if (id.size !== 24)
         return null;
-    return await User.findById(id);
+    return await User.findById(id).lean();
 };
 
 /**
@@ -57,7 +57,7 @@ const getEmails = async () => {
     userArray.forEach((value) => {
         emailArray.push(value.email);
     });
-    return { emails: emailArray };
+    return {emails: emailArray}.lean();
 };
 
 /**
@@ -125,11 +125,11 @@ const deleteUserByEmail = async (email) => {
  * Finds if user exists by email and password
  *
  * @param {string} email - The user's email.
- * @param {string} password - The user's password.
- * @returns {Promise} A Promise that resolves to the user with the specified email and password.
+ * @param {string} password - the user's password
+ * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
 const findUserEx = async (email, password) => {
-    return await User.findOne({ email, password });
+    return await User.findOne({email: email, password: password}).lean();
 };
 
 module.exports = {

@@ -4,16 +4,16 @@ const postController = require("../controller/posts");
 const userController = require("../controller/users");
 const userService = require("../services/user");
 
-const isLoggedIn = (req, res) => {
-    // If the request has an authorization header
+const isLoggedIn = (req, res, next) => {
+// If the request has an authorization header
     if (req.headers.authorization) {
         // Extract the token from that header
         const token = req.headers.authorization.split(" ")[1];
         try {
             // Verify the token is valid
             const data = jwt.verify(token, key);
-            // Token validation was successful. Continue to the actual function (index)
-            return res.status(200);
+// Token validation was successful. Continue to the actual function (index)
+            next();
         } catch (err) {
             return res.status(401).send("Invalid Token");
         }
@@ -36,8 +36,6 @@ const processLogin = (req, res) => {
         // Incorrect username/password. The user should try again.
         res.status(404).send('Invalid username and/or password')
 }
-
-module.exports =
-{
+module.exports = {
     isLoggedIn, processLogin
 }

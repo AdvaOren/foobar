@@ -1,6 +1,7 @@
 //route to user functions
 const express = require("express");
 const user = require("../controller/users.js");
+const tokens = require("../controller/tokens");
 
 const router = express.Router();
 
@@ -17,19 +18,19 @@ router.get('/:email', user.getUserByEmail);
 router.get('/:email', user.getUserById);
 
 // Updates a user's information.
-router.put('/:id', user.updateUser);
+router.put('/:id', tokens.isLoggedIn, user.updateUser);
 
 // Updates a user's profile image.
-router.put('/updImage/:id', user.updateUserImg);
+router.put('/updImage/:id', tokens.isLoggedIn, user.updateUserImg);
 
 // Retrieves all user emails.
 router.get('/allEmails', user.getEmails);
 
 // Deletes a user by his ID.
-router.delete('/:id', user.deleteUser);
+router.delete('/:id', tokens.isLoggedIn, user.deleteUser);
 
 // Deletes a user by his email address.
-router.delete('/:email', user.deleteUserByEmail);
+router.delete('/:email', tokens.isLoggedIn, user.deleteUserByEmail);
 
 // Finds if user exists by email and password
 router.get('/exists/:email/:password' , user.findUserExists);

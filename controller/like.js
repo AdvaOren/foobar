@@ -1,14 +1,14 @@
 const like = require("../services/like.js");
 
 const addLike = async (req, res) => {
-    res.json(await like.addLike(req.body.userId,req.body.postId));
+    await like.addLike(req.body.userId,req.body.postId)
+    res.json(await like.getLikeAmount(req.body.postId));
 }
 const removeLike = async (req, res) => {
-    res.json(await like.removeLike(req.params.userId,req.params.posrId));
+    await like.removeLike(req.params.userId,req.params.postId)
+    res.json(await like.getLikeAmount(req.body.postId));
 }
-const removeLikesByPost = async (req,res) => {
-    res.json(await like.removeLikesByPost(req.params.postId))
-}
+
 const removeLikesByUser = async (req,res) => {
     res.json(await like.removeLikesByUser(req.params.userId))
 }
@@ -20,5 +20,5 @@ const getLikeAmount = async (req,res) => {
 }
 
 module.exports = {
-    addLike, removeLike, removeLikesByPost,removeLikesByUser, checkIfLike, getLikeAmount
+    addLike, removeLike,removeLikesByUser, checkIfLike, getLikeAmount
 }
