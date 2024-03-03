@@ -15,7 +15,7 @@ router.post('/', user.createUser);
 router.get('/:email', user.getUserByEmail);
 
 // Finds a user by his ID.
-router.get('/:email', user.getUserById);
+router.get('/:id', user.getUserById);
 
 // Updates a user's information.
 router.put('/:id', tokens.isLoggedIn, user.updateUser);

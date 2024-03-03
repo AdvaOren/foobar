@@ -2,7 +2,7 @@ const user = require("../services/user.js");
 const like = require("../services/like");
 const comment = require("../services/comment");
 
-async function createUser(req, res) {
+async function createUser(req, res, next) {
     const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img);
     res.json(newUser.id);
 }

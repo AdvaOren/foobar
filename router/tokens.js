@@ -4,6 +4,6 @@ const token = require('../controller/tokens');
 
 
 
-router.post('/', token.isLoggedIn);
+router.post('/', token.processLogin);
 
 module.exports = router;

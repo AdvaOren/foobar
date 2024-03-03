@@ -65,6 +65,5 @@ module.exports = {
     updatePostImg,
     deletePost,
     getAuthor,
-    latestFivePost,
     get25Posts
 }

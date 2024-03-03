@@ -14,6 +14,7 @@ const isLoggedIn = (req, res, next) => {
             const data = jwt.verify(token, key);
 // Token validation was successful. Continue to the actual function (index)
             next();
+
         } catch (err) {
             return res.status(401).send("Invalid Token");
         }
