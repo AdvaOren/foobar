@@ -2,13 +2,13 @@ const user = require("../services/user.js");
 const like = require("../services/like");
 const comment = require("../services/comment");
 
-async function createUser(req, res, next) {
+async function createUser(req, res) {
     const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img);
     res.json(newUser.id);
 }
 
 const getUserByEmail = async (req, res) => {
-    res.json(await user.getUserByEmail(req.query.email));
+    res.json(await user.getUserByEmail(req.params.email));
 };
 
 const getUserById = async (req, res) => {
