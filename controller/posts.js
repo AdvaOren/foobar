@@ -2,12 +2,14 @@ const posts = require("../services/post.js");
 const friends = require("../services/friend");
 const like = require("../services/like.js");
 const comment = require("../services/comment.js");
+const user = require("../services/user");
 /**
  * name: createPost
  * action: creates post
  * **/
 const createPost = async (req, res) => {
-    res.json(await posts.createPost(req.body.content, req.body.img, req.body.userId, req.body.date));
+    const author = await user.getUserById(req.userId);
+    res.json(await posts.createPost(req.body.content, req.body.img, req.body.userId, req.body.date), author.firstName + author.lastName, author.img);
 }
 /**
  * name:getPostById
@@ -23,23 +25,46 @@ const getPostById = async (req, res) => {
 const getPostsByUser = async (req, res) => {
     res.json(await posts.getPostsByUser(req.query.userId))
 }
+/**
+ * name: updatePostContent
+ * action: updates post id content if and only if the requester is the author.
+ * **/
 const updatePostContent = async (req, res) => {
+    //get author of post
+    const author = await posts.getAuthor(req.params.id);
+    // check if request is valid
+    if (req.params.userId !== author.id) {
+        return res.status(500).json({errors: ["unable to update, requester is not the author"]});
+    }
+    await posts.updatePostImg(req.params.id, req.params.img);
     res.json(await posts.updatePostContent(req.params.id, req.params.content))
 }
+/**
+ * name: updatePostImg
+ * action: updates post id img if and only if the requester is the author.
+ * **/
 const updatePostImg = async (req, res) => {
+    const author = await posts.getAuthor(req.params.id);
+    if (req.params.userId !== author.id) {
+        return res.status(500).json({errors: ["unable to update, requester is not the author"]});
+    }
     res.json(await posts.updatePostImg(req.params.id, req.params.img))
 }
+/**
+ * name: getAuthor
+ * action: gets the author of post by id.
+ * **/
 const getAuthor = async (req, res) => {
     res.json(await posts.getAuthor(req.query.id))
 }
 
 /**
  * func name: get25posts
- * action: returns 20 latests posts of friends and 5 latests posts in general
+ * action: returns 20 latest posts of friends and 5 latest posts in general
  * */
 const get25Posts = async (req, res) => {
-    var list = await posts.latestFivePost();
-    list.concat(await friends.getLastPostOfFriends());
+    let list = await posts.latestFivePost(req.query.userId);
+    list.concat(await friends.getLastPostOfFriends(req.query.userId));
     res.json(list);
 
 }
@@ -65,6 +90,5 @@ module.exports = {
     updatePostImg,
     deletePost,
     getAuthor,
-    latestFivePost,
     get25Posts
 }

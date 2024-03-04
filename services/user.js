@@ -38,7 +38,7 @@ const getUserByEmail = async (email) => {
  * @returns {Promise} A Promise that resolves to the user with the specified ID.
  */
 const getUserById = async (id) => {
-    if (id.size !== 24)
+    if (id.length !== 24)
         return null;
     return await User.findById(id).lean();
 };

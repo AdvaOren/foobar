@@ -9,7 +9,8 @@ const Friends = require('../models/Friends');
  */
 const createFriends = async (requester, requested) => {
     const friends = new Friends({
-        requester: requester, requested: requested,status:"wait"});
+        requester: requester, requested: requested, status: "wait"
+    });
     return await friends.save();
 };
 
@@ -21,8 +22,8 @@ const createFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to null.
  */
 const deleteFriends = async (requester, requested) => {
-    await Friends.deleteOne({ requester: requester, requested: requested });
-    await Friends.deleteOne({ requester: requested, requested: requester });
+    await Friends.deleteOne({requester: requester, requested: requested});
+    await Friends.deleteOne({requester: requested, requested: requester});
     return null;
 };
 
@@ -35,9 +36,10 @@ const deleteFriends = async (requester, requested) => {
 const deleteAllFriendsByUser = async (user) => {
     await Friends.deleteMany({
         $or: [
-            { requester: user },
-            { requested: user }
-        ]});
+            {requester: user},
+            {requested: user}
+        ]
+    });
     return null;
 };
 
@@ -50,7 +52,7 @@ const deleteAllFriendsByUser = async (user) => {
  */
 const checkIfFriends = async (requester, requested) => {
     const friends = await Friends.findOne(
-            { requester: requester, requested: requested, status: "approve" });
+        {requester: requester, requested: requested, status: "approve"});
     if (!friends) return false;
     return true;
 };
@@ -62,9 +64,9 @@ const checkIfFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
  */
 const getFriendsOfUser = async (user) => {
-    const friends = await Friends.find({ requester: user , status: "approve"});
+    const friends = await Friends.find({requester: user, status: "approve"}).lean();
     if (!friends)
-        return {friends : []};
+        return {friends: []};
     const userFriends = [];
     friends.forEach((value) => {
         if (value.requester === user)
@@ -72,7 +74,7 @@ const getFriendsOfUser = async (user) => {
         else
             userFriends.push(value.requested);
     });
-    return userFriends.lean();
+    return userFriends;
 };
 
 /**
@@ -85,7 +87,7 @@ const acceptFriendship = async (requester, requested) => {
     const friend = await Friends.findOne({requested: requested, requester: requester, status: "wait"})
     if (!friend) return false;
     friend.status = "approve";
-    const friend2 = await createFriends(requested,requester);
+    const friend2 = await createFriends(requested, requester);
     friend2.status = "approve";
     await friend.save();
     await friend2.save();
@@ -97,20 +99,20 @@ const acceptFriendship = async (requester, requested) => {
  *
  * @returns {Promise} A Promise that resolves to array of the 20 last post of his friends
  */
-const getLastPostOfFriends = async () => {
+const getLastPostOfFriends = async (id) => {
     const posts = await Friends.aggregate([
         {
             $lookup: {
                 from: "posts",
-                let: { requester: "$requester", requested: "$requested", status: "$status" },
+                let: {requester: "$requester", requested: "$requested", status: "$status"},
                 pipeline: [
                     {
                         $match: {
                             $expr: {
                                 $and: [
-                                    { $eq: ["$userId", "$$requested"] } ,
-                                    { $eq: ["$$requester", id] },
-                                    { $eq: ["$$status", "approve"]}
+                                    {$eq: ["$userId", "$$requested"]},
+                                    {$eq: ["$$requester", id]},
+                                    {$eq: ["$$status", "approve"]}
                                 ]
                             }
                         }
@@ -123,14 +125,20 @@ const getLastPostOfFriends = async () => {
             $unwind: "$matchedPosts"
         },
         {
-            $replaceRoot: { newRoot: "$matchedPosts" }
+            $replaceRoot: {newRoot: "$matchedPosts"}
         }
-    ]).sort({date: -1}).limit(20)
-    return posts.lean();
+    ]).sort({date: -1}).limit(20).lean();
+    const postsMembers = [];
+    for (const post of posts) {
+        const member = await User.getUserById(post.userId);
+        postsMembers.push([post, member])
+    }
+    return postsMembers;
 }
 
 
-module.exports = {createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
+module.exports = {
+    createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
     getFriendsOfUser,
     getLastPostOfFriends,
-    };
+};

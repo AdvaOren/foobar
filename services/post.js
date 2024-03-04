@@ -99,7 +99,7 @@ const getAuthor = async (id) => {
  *
  * @returns {Promise} A Promise that resolves to an object containing the posts
  */
-const latestFivePost = async () => {
+const latestFivePost = async (id) => {
     const friends = await fServices.getFriendsOfUser(id);
     friends.push(id);
     const postList = await Post.find({userId:{"$nin":friends}})

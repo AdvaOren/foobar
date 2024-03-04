@@ -11,5 +11,6 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.json());
 app.use('/', router);
+app.use(bodyParser.json({ limit: '50mb' }));
 
 app.listen(8080);
