@@ -9,28 +9,30 @@ const router = express.Router();
 //TODO add token
 
 // Create new user
-router.post('/users', user.createUser);
+router.post('/', user.createUser);
 
 // Finds a user by his email address.
-router.get('/users/:email', user.getUserByEmail);
+router.get('/:email', user.getUserByEmail);
 
 // Finds a user by his ID.
-router.get('/users/:email', user.getUserById);
+router.get('/:id', user.getUserById);
 
 // Updates a user's information.
-router.put('/users/:id', tokens.isLoggedIn, user.updateUser);
+router.put('/:id', tokens.isLoggedIn, user.updateUser);
 
 // Updates a user's profile image.
-router.put('/users/updImage/:id', tokens.isLoggedIn, user.updateUserImg);
+router.put('/updImage/:id', tokens.isLoggedIn, user.updateUserImg);
 
 // Retrieves all user emails.
-router.get('/users/allEmails', user.getEmails);
+router.get('/allEmails', user.getEmails);
 
 // Deletes a user by his ID.
-router.delete('/users/:id', tokens.isLoggedIn, user.deleteUser);
+router.delete('/:id', tokens.isLoggedIn, user.deleteUser);
 
 // Deletes a user by his email address.
-router.delete('/users/:email', tokens.isLoggedIn, user.deleteUserByEmail);
+router.delete('/:email', tokens.isLoggedIn, user.deleteUserByEmail);
 
-module.exports =
-    router
+// Finds if user exists by email and password
+router.get('/exists/:email/:password' , user.findUserExists);
+
+module.exports = router

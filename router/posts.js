@@ -12,23 +12,23 @@ const tokens = require("../controller/tokens");
 
 
 // Creates a new post.
-router.post('/users/:id/posts', tokens.isLoggedIn, post.createPost);
+router.post('/:id/posts', tokens.isLoggedIn, post.createPost);
 
 // Updates the content of a post.
-router.put('users/:id/posts/:pid', tokens.isLoggedIn, post.updatePostContent);
+router.put('/:id/posts/:pid', tokens.isLoggedIn, post.updatePostContent);
 
 // Deletes a post by its ID.
-router.delete('users/:id/posts/:pid', tokens.isLoggedIn, post.deletePost);
+router.delete('/:id/posts/:pid', tokens.isLoggedIn, post.deletePost);
 
 // Retrieves a post by its ID.
-router.get('users/:id/posts/:pid', tokens.isLoggedIn, post.getPostById);
+router.get('/:id/posts/:pid', tokens.isLoggedIn, post.getPostById);
 
 // Retrieves all posts of user.
-router.get('users/:id/posts', tokens.isLoggedIn, post.getPostsByUser);
+router.get('/:id/posts', tokens.isLoggedIn, post.getPostsByUser);
 
 
 // Retrieves the author of a post by post id.
-router.get('users/posts/:pid', tokens.isLoggedIn, post.getAuthor);
+router.get('/posts/:pid', tokens.isLoggedIn, post.getAuthor);
 module.exports =
     router
 

@@ -18,6 +18,7 @@ const createUser = async (email, firstName, lastName, password, img) => {
         email: email, firstName: firstName, lastName: lastName, password: password,
         img: img
     });
+    
     return await user.save();
 };
 
@@ -52,7 +53,7 @@ const getEmails = async () => {
     const userArray = await User.find({});
     let emailArray = [];
     if (!userArray)
-        return {emails: []};
+        return { emails: [] };
     userArray.forEach((value) => {
         emailArray.push(value.email);
     });
@@ -121,7 +122,7 @@ const deleteUserByEmail = async (email) => {
     return user;
 };
 /**
- * Finds a user by his email address.
+ * Finds if user exists by email and password
  *
  * @param {string} email - The user's email.
  * @param {string} password - the user's password
@@ -130,6 +131,7 @@ const deleteUserByEmail = async (email) => {
 const findUserEx = async (email, password) => {
     return await User.findOne({email: email, password: password}).lean();
 };
+
 module.exports = {
     createUser,
     getUserByEmail,

@@ -3,12 +3,12 @@ const like = require("../services/like");
 const comment = require("../services/comment");
 
 async function createUser(req, res) {
-    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img)
+    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img);
     res.json(newUser.id);
 }
 
 const getUserByEmail = async (req, res) => {
-    res.json(await user.getUserByEmail(req.query.email));
+    res.json(await user.getUserByEmail(req.params.email));
 };
 
 const getUserById = async (req, res) => {
@@ -46,7 +46,11 @@ const deleteUserByEmail = async (req, res) => {
     await comment.deleteCommentsByUser(req.params.id)
     res.json(await user.deleteUserByEmail(req.params.email));
 }
+const findUserExists = async (req, res) => {
+    res.json(await user.findUserEx(req.params.email, req.params.password));
+}
+
 module.exports =
-    {
-        createUser, getUserByEmail, getUserById, getEmails, updateUser, updateUserImg, deleteUser, deleteUserByEmail
-    }
+{
+    createUser, getUserByEmail, getUserById, getEmails, updateUser, updateUserImg, deleteUser, deleteUserByEmail, findUserExists
+}
