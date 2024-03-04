@@ -8,7 +8,7 @@ const user = require("../services/user");
  * action: creates post
  * **/
 const createPost = async (req, res) => {
-    const author = await user.getUserById(req.userId);
+    const author = await user.getUserById(req.body.userId);
     res.json(await posts.createPost(req.body.content, req.body.img, req.body.userId, req.body.date), author.firstName + author.lastName, author.img);
 }
 /**

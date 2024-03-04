@@ -7,8 +7,9 @@ const friends = require("./friends.js");
 
 router.use("/api/users", users);
 router.use("/api/users", friends);
-
+router.use("/api/users", posts);
 router.use("/api/tokens", tokens);
 router.use("/api/posts", posts)
+
 module.exports =
     router
