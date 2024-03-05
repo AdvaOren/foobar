@@ -1,6 +1,7 @@
 const Friends = require('../models/Friends');
 const User = require("./user");
 const Like = require("./like");
+const Comment = require("./comment");
 
 /**
  * Creates a new friendship between two users.
@@ -135,7 +136,8 @@ const getLastPostOfFriends = async (id) => {
         const member = await User.getUserById(post.userId);
         const likeAmount = await Like.getLikeAmount(post._id);
         const isLiked = await  Like.checkIfLike(post.userId,post._id);
-        const likeObj = {"likeAmount" : likeAmount, "isLiked" : isLiked, "postId": post._id};
+        const commentsAmount = await Comment.getCommentsAmount(post._id);
+        const postInfo = {"likeAmount" : likeAmount, "isLiked" : isLiked, "postId": post._id, "commentAmount" : commentsAmount};
         postsMembers.push({"first":post,"second":member,"third":likeObj})
     }
     return postsMembers;
