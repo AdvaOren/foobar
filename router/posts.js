@@ -3,7 +3,7 @@ const post = require("../controller/posts.js");
 const friend = require("../controller/friend.js");
 const router = express.Router();
 const tokens = require("../controller/tokens");
-//TODO last 25 posts GET
+
 router.get('/',tokens.isLoggedIn, post.get25Posts);
 
 //TODO users/:id/posts GET
