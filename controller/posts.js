@@ -63,9 +63,22 @@ const getAuthor = async (req, res) => {
  * action: returns 20 latest posts of friends and 5 latest posts in general
  * */
 const get25Posts = async (req, res) => {
-    let list = await posts.latestFivePost(req.query.userId);
-    list.concat(await friends.getLastPostOfFriends(req.query.userId));
-    res.json(list);
+    let list = await posts.latestFivePost(req.query.id);
+    list = list.concat(await friends.getLastPostOfFriends(req.query.id));
+    console.log(list)
+    list = [list[0], list[1], list[2], list[3], list[4], list[5], list[6]]
+    console.log(list)
+    const chunkSize = 5; // Number of objects per chunk
+
+    // Split the list into chunks
+    const chunks = [];
+    for (let i = 0; i < list.length; i += chunkSize) {
+        chunks.push(list.slice(i, i + chunkSize));
+    }
+
+    const chunk = chunks[req.query.page - 1];
+    console.log(chunk)
+    res.json(chunk);
 
 }
 /**

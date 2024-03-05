@@ -1,5 +1,6 @@
 const Post = require('../models/post');
 const fServices = require('../services/friend');
+const User = require('./user');
 
 /**
  * Creates a new post.
@@ -104,7 +105,12 @@ const latestFivePost = async (id) => {
     friends.push(id);
     const postList = await Post.find({userId:{"$nin":friends}})
         .sort({date: -1}).limit(5).lean()
-    return postList.lean();
+    const postsMembers = [];
+    for (const post of postList) {
+        const member = await User.getUserById(post.userId);
+        postsMembers.push({"first":post,"second":member})
+    }
+    return postsMembers;
 }
 
 
