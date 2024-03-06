@@ -17,7 +17,7 @@ async function createUser(req, res) {
 const getUserByEmail = async (req, res) => {
     const a = await user.getUserByEmail(req.params.email);
     if (a !== null)
-        res.json({ user: a });
+        res.json(a);
     else
         res.json(await  user.getUserById(req.params.email));
 };
@@ -29,12 +29,13 @@ const getEmails = async (req, res) => {
     res.json(await user.getEmails());
 }
 const updateUser = async (req, res) => {
-    if (req.params.userId !== req.params.id) {
+    if (req.body.userId !== req.params.id) {
         return res.status(500).json({errors: ["unable to update, requester is not the user"]});
     }
     res.json(await user.updateUser(req.params
-        .id, req.params.email, req.params.firstName, req.params.lastName, req.params.password));
+        .id, req.body.email, req.body.firstName, req.body.lastName, req.body.password));
 }
+
 const updateUserImg = async (req, res) => {
     if (req.params.userId !== req.params.id) {
         return res.status(500).json({errors: ["unable to update, requester is not the user"]});
