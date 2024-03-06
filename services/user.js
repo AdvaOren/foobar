@@ -14,6 +14,7 @@ const createUser = async (email, firstName, lastName, password, img) => {
     // Check if the email already exists
     if (await getUserByEmail(email))
         return null;
+    
     const user = new User({
         email: email, firstName: firstName, lastName: lastName, password: password,
         img: img

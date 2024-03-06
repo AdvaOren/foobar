@@ -8,10 +8,11 @@ mongoose.connect('mongodb://localhost:27017/test_database', {useNewUrlParser: tr
 const app = express();
 app.use(express.static('public'))
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.json());
 app.use('/', router);
-app.use(bodyParser.json({ limit: '50mb' }));
 
-app.listen(8980);
+const server = app.listen(8080);
+// Set maxHeadersSize
+server.maxHeadersSize = 1024 * 1024; // Set the maximum header size in bytes

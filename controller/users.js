@@ -3,14 +3,21 @@ const like = require("../services/like");
 const comment = require("../services/comment");
 
 async function createUser(req, res) {
-    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, req.body.img);
+    // Extract the image data from the Base64 string
+    const base64Data = req.body.img.replace(/^data:image\/\w+;base64,/, '');
+        
+    // Convert the Base64 data to a Buffer
+    const imageData = Buffer.from(base64Data, 'base64');
+
+    
+    const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, imageData);
     res.json(newUser.id);
 }
 
 const getUserByEmail = async (req, res) => {
     const a = await user.getUserByEmail(req.params.email);
     if (a !== null)
-        res.json(a);
+        res.json({ user: a });
     else
         res.json(await  user.getUserById(req.params.email));
 };
