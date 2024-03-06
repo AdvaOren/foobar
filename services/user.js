@@ -14,7 +14,7 @@ const createUser = async (email, firstName, lastName, password, img) => {
     // Check if the email already exists
     if (await getUserByEmail(email))
         return null;
-    
+
     const user = new User({
         email: email, firstName: firstName, lastName: lastName, password: password,
         img: img
@@ -30,7 +30,7 @@ const createUser = async (email, firstName, lastName, password, img) => {
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
 const getUserByEmail = async (email) => {
-    return await User.findOne({email: email}).lean();
+    return await User.findOne({ email: email }).lean();
 };
 
 /**
@@ -58,7 +58,7 @@ const getEmails = async () => {
     userArray.forEach((value) => {
         emailArray.push(value.email);
     });
-    return {emails: emailArray}.lean();
+    return { emails: emailArray }.lean();
 };
 
 /**
@@ -72,13 +72,13 @@ const getEmails = async () => {
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
 const updateUser = async (id, email, firstName, lastName, password) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    user.email = email;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.password = password;
-    await user.save();
+    const user = await User.findOneAndUpdate(
+        { _id: id }, 
+        { email, firstName, lastName, password },
+    );
+    if (!user) {
+        return null;
+    }
     return user;
 };
 
@@ -90,10 +90,13 @@ const updateUser = async (id, email, firstName, lastName, password) => {
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
 const updateUserImg = async (id, img) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    user.img = img;
-    await user.save();
+    const user = await User.findOneAndUpdate(
+        { _id: id }, 
+        { img },
+    );
+    if (!user) {
+        return null;
+    }
     return user;
 };
 
@@ -130,11 +133,7 @@ const deleteUserByEmail = async (email) => {
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
 const findUserEx = async (email, password) => {
-    const user =  await User.findOne({email: email, password: password}).lean();
-    if (!user) {
-        return null
-    }
-    return user
+    return await User.findOne({ email: email, password: password }).lean();
 };
 
 module.exports = {
