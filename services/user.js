@@ -130,7 +130,11 @@ const deleteUserByEmail = async (email) => {
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
 const findUserEx = async (email, password) => {
-    return await User.findOne({email: email, password: password}).lean();
+    const user =  await User.findOne({email: email, password: password}).lean();
+    if (!user) {
+        return null
+    }
+    return user
 };
 
 module.exports = {
