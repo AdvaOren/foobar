@@ -8,10 +8,10 @@ const Like = require('../models/Like');
  * @returns {Promise} A Promise that resolves to the created like.
  */
 const addLike = async (userId, postId) => {
-    const like = new Like({
+    const newLike = new Like({
         userId: userId, postId: postId
     });
-    return await like.save();
+    return await newLike.save();
 };
 
 /**
@@ -69,7 +69,7 @@ const checkIfLike = async (userId, postId) => {
  */
 const getLikeAmount = async (postId) => {
     const likes = await Like.find({postId: postId});
-    return likes.length;
+    return {likes: likes.length};
 };
 
 module.exports = {
