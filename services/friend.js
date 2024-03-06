@@ -1,4 +1,7 @@
 const Friends = require('../models/Friends');
+const User = require("./user");
+const Like = require("./like");
+const Comment = require("./comment");
 
 /**
  * Creates a new friendship between two users.
@@ -64,7 +67,7 @@ const checkIfFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
  */
 const getFriendsOfUser = async (user) => {
-    const friends = await Friends.find({requester: user, status: "approve"}).lean();
+    const friends = await Friends.find({ requester: user , status: "approve"}).lean();
     if (!friends)
         return {friends: []};
     const userFriends = [];
@@ -127,11 +130,15 @@ const getLastPostOfFriends = async (id) => {
         {
             $replaceRoot: {newRoot: "$matchedPosts"}
         }
-    ]).sort({date: -1}).limit(20).lean();
+    ]).sort({date: -1}).limit(20)
     const postsMembers = [];
     for (const post of posts) {
         const member = await User.getUserById(post.userId);
-        postsMembers.push([post, member])
+        const likeAmount = await Like.getLikeAmount(post._id);
+        const isLiked = await  Like.checkIfLike(post.userId,post._id);
+        const commentsAmount = await Comment.getCommentsAmount(post._id);
+        const postInfo = {"likeAmount" : likeAmount, "isLiked" : isLiked, "postId": post._id, "commentAmount" : commentsAmount};
+        postsMembers.push({"first":post,"second":member,"third":likeObj})
     }
     return postsMembers;
 }

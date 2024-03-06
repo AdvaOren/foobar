@@ -1,5 +1,8 @@
 const Post = require('../models/post');
 const fServices = require('../services/friend');
+const User = require('./user');
+const Like = require('./like');
+const Comment = require('./comment');
 
 /**
  * Creates a new post.
@@ -104,7 +107,16 @@ const latestFivePost = async (id) => {
     friends.push(id);
     const postList = await Post.find({userId:{"$nin":friends}})
         .sort({date: -1}).limit(5).lean()
-    return postList.lean();
+    const postsMembers = [];
+    for (const post of postList) {
+        const member = await User.getUserById(post.userId);
+        const likeAmount = await Like.getLikeAmount(post._id);
+        const isLiked = await  Like.checkIfLike(post.userId,post._id);
+        const commentsAmount = await Comment.getCommentsAmount(post._id);
+        const postInfo = {"likeAmount" : likeAmount, "isLiked" : isLiked, "postId": post._id, "commentAmount" : commentsAmount};
+        postsMembers.push({"first":post,"second":member,"third":postInfo})
+    }
+    return postsMembers;
 }
 
 

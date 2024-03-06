@@ -8,7 +8,11 @@ async function createUser(req, res) {
 }
 
 const getUserByEmail = async (req, res) => {
-    res.json(await user.getUserByEmail(req.params.email));
+    const a = await user.getUserByEmail(req.params.email);
+    if (a !== null)
+        res.json(a);
+    else
+        res.json(await  user.getUserById(req.params.email));
 };
 
 const getUserById = async (req, res) => {

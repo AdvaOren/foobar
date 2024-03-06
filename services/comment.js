@@ -106,6 +106,11 @@ const deleteCommentsByUser = async (userId) => {
     return null;
 };
 
+const getCommentsAmount = async (postId) => {
+    const comments = await getCommentsByPost(postId)
+    return comments.length
+}
+
 module.exports = {
     createComment,
     getCommentsByUser,
@@ -114,5 +119,6 @@ module.exports = {
     deleteCommentsByUser,
     deleteCommentsByPost,
     deleteCommentById,
-    updateComment
+    updateComment,
+    getCommentsAmount
 };
