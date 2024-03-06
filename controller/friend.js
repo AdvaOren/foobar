@@ -1,7 +1,7 @@
 const friend = require("../services/friend.js");
 
 const createFriends = async (req, res) => {
-    res.json(await friend.createFriends(req.body.user1, req.body.user2))
+    res.json(await friend.createFriends(req.body.requesterId, req.body.requestedId))
 }
 const deleteFriends = async (req, res) => {
     return await friend.deleteFriends(req.params.user1, req.params.user2);
