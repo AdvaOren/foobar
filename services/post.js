@@ -113,7 +113,7 @@ const latestFivePost = async (id) => {
         const likeAmount = await Like.getLikeAmount(post._id);
         const isLiked = await  Like.checkIfLike(post.userId,post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
-        const postInfo = {"likeAmount" : likeAmount, "isLiked" : isLiked, "postId": post._id, "commentAmount" : commentsAmount};
+        const postInfo = {"likeAmount" : likeAmount.likes, "isLiked" : isLiked, "postId": post._id.toString(), "commentsAmount" : commentsAmount, "userId" : id};
         postsMembers.push({"first":post,"second":member,"third":postInfo})
     }
     return postsMembers;
