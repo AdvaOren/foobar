@@ -9,7 +9,9 @@ const user = require("../services/user");
  * **/
 const createPost = async (req, res) => {
     const author = await user.getUserById(req.params.id);
-    res.json(await posts.createPost(req.body.content, req.body.img, req.params.id, req.body.date), author.firstName + author.lastName, author.img);
+    const post = await posts.createPost(req.body.content, req.body.img, req.params.id, req.body.date)
+    console.log(post)
+    res.json({...post, name: author.firstName + " " + author.lastName, profileImage: author.img});
 }
 /**
  * name:getPostById
