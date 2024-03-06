@@ -1,15 +1,13 @@
 const like = require("../services/like.js");
 
 const handleLike = async (req, res) => {
-    console.log("in cont: ", req.body);
-    const isLiked = like.checkIfLike(req.params.id, req.pid)
+    const isLiked = await like.checkIfLike(req.params.id, req.pid)
     //if post is liked by user than remove like else add like
     if (isLiked) {
         await like.removeLike(req.params.id, req.params.pid);
     } else {
         await like.addLike(req.params.id, req.params.pid)
     }
-    console.log("params id: ", req.params.id, " params pid: ", req.params.pid)
     const amount = await like.getLikeAmount(req.params.postId)
     res.json({amount: amount});
 }
