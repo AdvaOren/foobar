@@ -24,7 +24,7 @@ router.put('/:id', tokens.isLoggedIn, user.updateUser);
 router.put('/updImage/:id', tokens.isLoggedIn, user.updateUserImg);
 
 // Update a user's information and profile image
-router.put('/updAll/:id', tokens.isLoggedIn, user.updateUserImg, user.updateUser);
+router.put('/updAll/:id', tokens.isLoggedIn, user.updateUserAll);
 
 // Retrieves all user emails.
 router.get('/allEmails', user.getEmails);

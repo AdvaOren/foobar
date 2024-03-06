@@ -72,27 +72,14 @@ const getEmails = async () => {
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
 const updateUser = async (id, email, firstName, lastName, password) => {
-
     const user = await User.findOneAndUpdate(
-        { _id: id }, // Filter: find user by ID
-        { email, firstName, lastName, password }, // Update: set new values
+        { _id: id }, 
+        { email, firstName, lastName, password },
     );
     if (!user) {
-        // If user is not found, return null or throw an error
         return null;
     }
-
-    // Return the updated user
     return user;
-
-    // const user = await getUserById(id);
-    // if (!user) return null;
-    // user.email = email;
-    // user.firstName = firstName;
-    // user.lastName = lastName;
-    // user.password = password;
-    // await user.save();
-    // return user;
 };
 
 /**
@@ -103,10 +90,13 @@ const updateUser = async (id, email, firstName, lastName, password) => {
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
 const updateUserImg = async (id, img) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    user.img = img;
-    await user.save();
+    const user = await User.findOneAndUpdate(
+        { _id: id }, 
+        { img },
+    );
+    if (!user) {
+        return null;
+    }
     return user;
 };
 

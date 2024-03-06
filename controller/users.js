@@ -5,11 +5,11 @@ const comment = require("../services/comment");
 async function createUser(req, res) {
     // Extract the image data from the Base64 string
     const base64Data = req.body.img.replace(/^data:image\/\w+;base64,/, '');
-        
+
     // Convert the Base64 data to a Buffer
     const imageData = Buffer.from(base64Data, 'base64');
 
-    
+
     const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, imageData);
     res.json(newUser.id);
 }
@@ -19,7 +19,7 @@ const getUserByEmail = async (req, res) => {
     if (a !== null)
         res.json(a);
     else
-        res.json(await  user.getUserById(req.params.email));
+        res.json(await user.getUserById(req.params.email));
 };
 
 const getUserById = async (req, res) => {
@@ -29,22 +29,50 @@ const getEmails = async (req, res) => {
     res.json(await user.getEmails());
 }
 const updateUser = async (req, res) => {
+    console.log("im innn wwww");
     if (req.body.userId !== req.params.id) {
-        return res.status(500).json({errors: ["unable to update, requester is not the user"]});
+        return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
     }
     res.json(await user.updateUser(req.params
         .id, req.body.email, req.body.firstName, req.body.lastName, req.body.password));
 }
 
 const updateUserImg = async (req, res) => {
-    if (req.params.userId !== req.params.id) {
-        return res.status(500).json({errors: ["unable to update, requester is not the user"]});
+    if (req.body.userId !== req.params.id) {
+        return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
     }
-    res.json(await user.updateUserImg(req.params.id, req.params.img));
+    const base64Data = req.body.img.replace(/^data:image\/\w+;base64,/, '');
+
+    // Convert the Base64 data to a Buffer
+    const imageData = Buffer.from(base64Data, 'base64');
+    res.json(await user.updateUserImg(req.params.id, imageData));
 }
+
+const updateUserAll = async (req, res) => {
+    try {
+        if (req.body.userId !== req.params.id) {
+            return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
+        }
+
+        // Update user image
+        const base64Data = req.body.img.replace(/^data:image\/\w+;base64,/, '');
+        const imageData = Buffer.from(base64Data, 'base64');
+        await user.updateUserImg(req.params.id, imageData);
+
+        // Update user details
+        const updateUserResult = await user.updateUser(req.params.id, req.body.email, req.body.firstName, req.body.lastName, req.body.password);
+
+        // Send response
+        res.json(updateUserResult);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ errors: ["Error updating user"] });
+    }
+}
+
 const deleteUser = async (req, res) => {
     if (req.params.userId !== req.params.id) {
-        return res.status(500).json({errors: ["unable to delete, requester is not the user"]});
+        return res.status(500).json({ errors: ["unable to delete, requester is not the user"] });
     }
     await like.removeLikesByUser(req.params.id);
     await comment.deleteCommentsByUser(req.params.id)
@@ -52,7 +80,7 @@ const deleteUser = async (req, res) => {
 }
 const deleteUserByEmail = async (req, res) => {
     if (req.params.userId !== req.params.id) {
-        return res.status(500).json({errors: ["unable to delete, requester is not the user"]});
+        return res.status(500).json({ errors: ["unable to delete, requester is not the user"] });
     }
     await like.removeLikesByUser(req.params.id);
     await comment.deleteCommentsByUser(req.params.id)
@@ -64,5 +92,5 @@ const findUserExists = async (req, res) => {
 
 module.exports =
 {
-    createUser, getUserByEmail, getUserById, getEmails, updateUser, updateUserImg, deleteUser, deleteUserByEmail, findUserExists
+    createUser, getUserByEmail, getUserById, getEmails, updateUser, updateUserImg, deleteUser, deleteUserByEmail, findUserExists, updateUserAll
 }
