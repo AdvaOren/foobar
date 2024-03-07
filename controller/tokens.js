@@ -5,18 +5,18 @@ const userController = require("../controller/users");
 const userService = require("../services/user");
 
 const isLoggedIn = (req, res, next) => {
-// If the request has an authorization header
+    // If the request has an authorization header
     if (req.headers.authorization) {
         // Extract the token from that header
         let token = req.headers.authorization.split(" ")[1];
         try {
             //handle the case that the android send token and add " at the start and end
             if (token.at(0) === '"') {
-                token = token.slice(1,-1);
+                token = token.slice(1, -1);
             }
             // Verify the token is valid
             const data = jwt.verify(token, key);
-// Token validation was successful. Continue to the actual function (index)
+            // Token validation was successful. Continue to the actual function (index)
             next();
 
         } catch (err) {

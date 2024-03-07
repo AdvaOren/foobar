@@ -1,4 +1,5 @@
 const friend = require("../services/friend.js");
+const user = require("../services/user.js");
 
 const createFriends = async (req, res) => {
     res.json(await friend.createFriends(req.body.requesterId, req.body.requestedId))
@@ -13,8 +14,13 @@ const checkIfFriends = async (req, res) => {
     res.json(await friend.checkIfFriends(req.body.user1, req.body.user2))
 }
 const getFriendsOfUser = async (req, res) => {
-    res.json(await friend.getFriendsOfUser(req.query.user))
+    const friendsId = await friend.getFriendsOfUser(req.params.id);
+    const friendsList = await Promise.all(friendsId.map(async (friendId) => {
+        return await user.getUserById(friendId);
+    }));
+    res.json(friendsList);
 }
+
 const getLastPostOfFriends = async (req, res) => {
     res.json(await friend.getLastPostOfFriends(req.query.id))
 }

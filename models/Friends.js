@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Define the options for the status field
-const statusOptions = ['ACCEPT', 'PENDING'];
+const statusOptions = ['approve', 'wait'];
 
 const Schema = mongoose.Schema;
 const Friends = new Schema({
@@ -17,7 +17,7 @@ const Friends = new Schema({
         type: String,
         required: true,
         enum: statusOptions,
-        default: 'PENDING' 
+        default: 'wait' 
     }
 });
 module.exports = mongoose.model('Friends', Friends);
