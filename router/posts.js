@@ -34,7 +34,7 @@ router.get('/:id/posts', tokens.isLoggedIn, post.getPostsByUser);
 router.get('/posts/:pid', tokens.isLoggedIn, post.getAuthor);
 
 //handle likes
-router.post(`/:pid/like/:id`, tokens.isLoggedIn, like.handleLike);
+router.post(`/:id/posts/:pid/like/`, tokens.isLoggedIn, like.handleLike);
 
 //get comments of post
 router.get(`/:pid/comments`, tokens.isLoggedIn, comment.getCommentsByPost)

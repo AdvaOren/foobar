@@ -4,10 +4,8 @@ const handleLike = async (req, res) => {
     const isLiked = await like.checkIfLike(req.params.id, req.params.pid)
     //if post is liked by user than remove like else add like
     if (isLiked) {
-        console.log("removed")
         await like.removeLike(req.params.id, req.params.pid);
     } else {
-        console.log("added")
         await like.addLike(req.params.id, req.params.pid)
     }
     const amount = await like.getLikeAmount(req.params.pid)
