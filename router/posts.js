@@ -20,8 +20,6 @@ router.post('/:id/posts', tokens.isLoggedIn, post.createPost);
 // Updates the content of a post.
 router.put('/:id/posts/:pid', tokens.isLoggedIn, post.updatePostContent);
 
-router.patch("/",)
-
 // Deletes a post by its ID.
 router.delete('/:id/posts/:pid', tokens.isLoggedIn, post.deletePost);
 

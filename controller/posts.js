@@ -34,16 +34,17 @@ const updatePostContent = async (req, res) => {
     //get author of post
     const author = await posts.getAuthor(req.params.pid);
     // check if request is valid
-    if (req.params.id !== author.id) {
+    if (author === null || req.params.id !== author.userId) {
         return res.status(500).json({errors: ["unable to update, requester is not the author"]});
     }
-    if (req.body.img === "") {
-        await posts.updatePostImg(req.params.pid, req.body.img);
+    let result = {}
+    if (req.body.img !== "") {
+        result = await posts.updatePostImg(req.params.pid, req.body.img);
     }
-    else if (req.body.content === "") {
-        await posts.updatePostContent(req.params.pid, req.body.content)
+    if (req.body.content !== "") {
+        result = await posts.updatePostContent(req.params.pid, req.body.content)
     }
-    res.json(await posts.updatePostContent(req.params.pid, req.body.content));
+    res.json(result);
 }
 
 /**
@@ -52,7 +53,7 @@ const updatePostContent = async (req, res) => {
  * **/
 const updatePostImg = async (req, res) => {
     const author = await posts.getAuthor(req.params.pid);
-    if (req.params.id !== author.id) {
+    if (author === null || req.params.id !== author.id) {
         return res.status(500).json({errors: ["unable to update, requester is not the author"]});
     }
     res.json(await posts.updatePostImg(req.params.id, req.body.img))
@@ -96,7 +97,7 @@ const get25Posts = async (req, res) => {
  * **/
 const deletePost = async (req, res) => {
     const postAuthor = await posts.getAuthor(req.params.pid)
-    if (req.params.id !== postAuthor.userId) {
+    if (postAuthor === null || req.params.id !== postAuthor.userId) {
         return res.status(500).json({errors: ["unable to delete, user is not the author"]});
     }
     const post = await posts.deletePost(req.params.pid);

@@ -58,11 +58,7 @@ const getPostsByUser = async (userId) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostContent = async (id, content) => {
-    const post = await getPostById(id);
-    if (!post) return null;
-    post.content = content;
-    await post.save();
-    return post;
+    return await Post.findOneAndUpdate({_id: id}, {content: content}, {new: true}).lean();
 };
 
 /**
@@ -73,11 +69,8 @@ const updatePostContent = async (id, content) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostImg = async (id, img) => {
-    const post = await getPostById(id);
-    if (!post) return null;
-    post.img = img;
-    await post.save();
-    return post;
+    return await Post.findOneAndUpdate({_id: id}, {img: img}, {new: true}).lean();
+
 };
 
 /**
