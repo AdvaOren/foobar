@@ -6,8 +6,8 @@ const tokens = require("../controller/tokens");
 const like = require("../controller/like");
 const comment = require("../controller/comment");
 
-//TODO last 25 posts GET
-// router.get('/posts', );
+//last 25 posts GET
+router.get('/', tokens.isLoggedIn,post.get25Posts);
 
 //TODO users/:id/posts GET
 

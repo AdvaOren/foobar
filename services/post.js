@@ -29,9 +29,7 @@ const createPost = async (content, img, userId, date) => {
  * @returns {Promise} A Promise that resolves to the post with the specified ID.
  */
 const getPostById = async (id) => {
-    if (id.length !== 24) {
-        return null;
-    }
+    if (id.length !== 24) return null;
     return await Post.findById(id).lean();
 };
 
@@ -107,24 +105,20 @@ const getAuthor = async (id) => {
 const latestFivePost = async (id) => {
     const friends = await fServices.getFriendsOfUser(id);
     friends.push(id);
-    const postList = await Post.find({userId: {"$nin": friends}})
+    const postList = await Post.find({userId:{"$nin":friends}})
         .sort({date: -1}).limit(5).lean()
     const postsMembers = [];
     for (const post of postList) {
         const member = await User.getUserById(post.userId);
         const likeAmount = await Like.getLikeAmount(post._id);
-        const isLiked = await Like.checkIfLike(post.userId, post._id);
+        const isLiked = await  Like.checkIfLike(post.userId,post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
-        const postInfo = {
-            "likeAmount": likeAmount,
-            "isLiked": isLiked,
-            "postId": post._id,
-            "commentAmount": commentsAmount
-        };
-        postsMembers.push({"first": post, "second": member, "third": postInfo})
+        const postInfo = {"likeAmount" : likeAmount.likes, "isLiked" : isLiked, "postId": post._id.toString(), "commentsAmount" : commentsAmount, "userId" : id};
+        postsMembers.push({"first":post,"second":member,"third":postInfo})
     }
     return postsMembers;
 }
+
 
 
 module.exports = {

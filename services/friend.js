@@ -25,8 +25,8 @@ const createFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to null.
  */
 const deleteFriends = async (requester, requested) => {
-    await Friends.deleteOne({requester: requester, requested: requested});
-    await Friends.deleteOne({requester: requested, requested: requester});
+    await Friends.deleteOne({ requester: requester, requested: requested });
+    await Friends.deleteOne({ requester: requested, requested: requester });
     return null;
 };
 
@@ -39,8 +39,8 @@ const deleteFriends = async (requester, requested) => {
 const deleteAllFriendsByUser = async (user) => {
     await Friends.deleteMany({
         $or: [
-            {requester: user},
-            {requested: user}
+            { requester: user },
+            { requested: user }
         ]
     });
     return null;
@@ -55,7 +55,7 @@ const deleteAllFriendsByUser = async (user) => {
  */
 const checkIfFriends = async (requester, requested) => {
     const friends = await Friends.findOne(
-        {requester: requester, requested: requested, status: "approve"});
+        { requester: requester, requested: requested, status: "approve" });
     if (!friends) return false;
     return true;
 };
@@ -67,15 +67,12 @@ const checkIfFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
  */
 const getFriendsOfUser = async (user) => {
-    const friends = await Friends.find({ requester: user , status: "approve"}).lean();
+    const friends = await Friends.find({ requester: user, status: "approve" }).lean();
     if (!friends)
-        return {friends: []};
+        return { friends: [] };
     const userFriends = [];
     friends.forEach((value) => {
-        if (value.requester === user)
-            userFriends.push(value.requested);
-        else
-            userFriends.push(value.requested);
+        userFriends.push(value.requested);
     });
     return userFriends;
 };
@@ -87,7 +84,7 @@ const getFriendsOfUser = async (user) => {
  * @returns {Promise} A Promise that resolves to success of accept the frienship ot not.
  */
 const acceptFriendship = async (requester, requested) => {
-    const friend = await Friends.findOne({requested: requested, requester: requester, status: "wait"})
+    const friend = await Friends.findOne({ requested: requested, requester: requester, status: "wait" })
     if (!friend) return false;
     friend.status = "approve";
     const friend2 = await createFriends(requested, requester);
@@ -107,15 +104,15 @@ const getLastPostOfFriends = async (id) => {
         {
             $lookup: {
                 from: "posts",
-                let: {requester: "$requester", requested: "$requested", status: "$status"},
+                let: { requester: "$requester", requested: "$requested", status: "$status" },
                 pipeline: [
                     {
                         $match: {
                             $expr: {
                                 $and: [
-                                    {$eq: ["$userId", "$$requested"]},
-                                    {$eq: ["$$requester", id]},
-                                    {$eq: ["$$status", "approve"]}
+                                    { $eq: ["$userId", "$$requested"] },
+                                    { $eq: ["$$requester", id] },
+                                    { $eq: ["$$status", "approve"] }
                                 ]
                             }
                         }
@@ -128,17 +125,17 @@ const getLastPostOfFriends = async (id) => {
             $unwind: "$matchedPosts"
         },
         {
-            $replaceRoot: {newRoot: "$matchedPosts"}
+            $replaceRoot: { newRoot: "$matchedPosts" }
         }
-    ]).sort({date: -1}).limit(20)
+    ]).sort({ date: -1 }).limit(20)
     const postsMembers = [];
     for (const post of posts) {
         const member = await User.getUserById(post.userId);
         const likeAmount = await Like.getLikeAmount(post._id);
-        const isLiked = await  Like.checkIfLike(post.userId,post._id);
+        const isLiked = await Like.checkIfLike(post.userId, post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
-        const postInfo = {"likeAmount" : likeAmount, "isLiked" : isLiked, "postId": post._id, "commentAmount" : commentsAmount};
-        postsMembers.push({"first":post,"second":member,"third":likeObj})
+        const postInfo = { "likeAmount": likeAmount.likes, "isLiked": isLiked, "postId": post._id.toString(), "commentsAmount": commentsAmount, "userId": id };
+        postsMembers.push({ "first": post, "second": member, "third": postInfo })
     }
     return postsMembers;
 }
