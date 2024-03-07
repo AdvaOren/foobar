@@ -89,7 +89,7 @@ const updatePostImg = async (id, img) => {
 const deletePost = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    await post.remove();
+    await Post.deleteOne({_id : id});
     return post;
 };
 
@@ -102,7 +102,7 @@ const deletePost = async (id) => {
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    return {userId: post.userId}.lean();
+    return {userId: post.userId};
 };
 
 /**

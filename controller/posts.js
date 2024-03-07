@@ -10,7 +10,6 @@ const user = require("../services/user");
 const createPost = async (req, res) => {
     const author = await user.getUserById(req.params.id);
     const post = await posts.createPost(req.body.content, req.body.img, req.params.id, req.body.date)
-    console.log(post)
     res.json({...post, name: author.firstName + " " + author.lastName, profileImage: author.img});
 }
 /**
@@ -91,10 +90,10 @@ const get25Posts = async (req, res) => {
  * **/
 const deletePost = async (req, res) => {
     const postAuthor = await posts.getAuthor(req.params.pid)
-    if (req.params.id !== postAuthor.id) {
+    if (req.params.id !== postAuthor.userId) {
         return res.status(500).json({errors: ["unable to delete, user is not the author"]});
     }
-    const post = posts.deletePost(req.params.pid);
+    const post = await posts.deletePost(req.params.pid);
     await like.removeLikesByPost(req.params.pid);
     await comment.deleteCommentsByPost(req.params.pid)
     res.json(post);
