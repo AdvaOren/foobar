@@ -38,10 +38,10 @@ const updatePostContent = async (req, res) => {
         return res.status(500).json({errors: ["unable to update, requester is not the author"]});
     }
     if (req.body.img === "") {
-       const updatedImg = await posts.updatePostImg(req.params.pid, req.body.img);
+        await posts.updatePostImg(req.params.pid, req.body.img);
     }
     else if (req.body.content === "") {
-        const updatedContent = await posts.updatePostContent(req.params.pid, req.body.content)
+        await posts.updatePostContent(req.params.pid, req.body.content)
     }
     res.json(await posts.updatePostContent(req.params.pid, req.body.content));
 }
