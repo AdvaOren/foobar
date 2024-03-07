@@ -94,7 +94,7 @@ const deletePost = async (id) => {
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    return {userId: post.userId}.lean();
+    return {userId: post.userId};
 };
 
 /**
