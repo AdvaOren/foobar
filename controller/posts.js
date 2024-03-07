@@ -74,10 +74,15 @@ const get25Posts = async (req, res) => {
     for (let i = 0; i < list.length; i += chunkSize) {
         chunks.push(list.slice(i, i + chunkSize));
     }
-
-    const chunk = chunks[req.query.page - 1];
-    console.log(chunk)
-    res.json(chunk)
+    if (chunks.length < req.query.page) {
+        console.log(null)
+        res.json(null)
+    }
+    else {
+        const chunk = chunks[req.query.page - 1];
+        console.log(chunk)
+        res.json(chunk)
+    }
 
 }
 /**
