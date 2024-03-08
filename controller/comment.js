@@ -51,14 +51,14 @@ const getCommentById = async (req, res) => {
     res.json(find)
 }
 const updateComment = async (req, res) => {
-    const find = await comment.updateComment(req.body.id, req.body.text);
+    const find = await comment.updateComment(req.body.cid, req.body.text);
     if (!find) {
         return res.status(404).json({errors: ['Comment not found']});
     }
     res.json(find);
 }
 const deleteCommentById = async (req, res) => {
-    return await comment.deleteCommentById(req.params.id);
+    return await comment.deleteCommentById(req.body.cid);
 }
 const deleteCommentsByPost = async (req, res) => {
     return await comment.deleteCommentsByPost(req.params.pid);

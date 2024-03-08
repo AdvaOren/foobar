@@ -42,8 +42,13 @@ router.get(`/:pid/comments`, tokens.isLoggedIn, comment.getCommentsByPost)
 //create comment of user id in post pid
 router.post(`/:id/posts/:pid/comments`, tokens.isLoggedIn, comment.createComment)
 
-module.exports =
-    router
+//delete comment by ID
+router.delete(`/:id/posts/:pid/comments`,tokens.isLoggedIn, comment.deleteCommentById)
+
+//update comment by ID
+router.put(`/:id/posts/:pid/comments`,tokens.isLoggedIn, comment.updateComment);
+
+module.exports = router
 
 
 
