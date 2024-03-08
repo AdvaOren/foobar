@@ -5,17 +5,36 @@ const createComment = async (req, res) => {
 }
 const getCommentsByUser = async (req, res) => {
     const comments = await comment.getCommentsByUser(req.params.id)
-    if (!comments) {
+    if (comments) {
         return res.status(404).json({errors: ['No comments found']});
     }
     res.json(comments)
 }
 const getCommentsByPost = async (req, res) => {
-    const comments = await comment.getCommentsByPost(req.params.pid)
+    /*const comments = await comment.getCommentsByPost(req.params.pid)
     if (!comments) {
         return res.status(404).json({errors: ['No comments found']});
     }
-    res.json(comments)
+    res.json(comments)*/
+    const comments = await comment.getCommentsByPost(req.params.pid)
+    /*if (comments === []) {
+        return res.status(404).json({errors: ['No comments found']});
+    }*/
+
+    const chunkSize = 5; // Number of objects per chunk
+    // Split the list into chunks
+    const chunks = [];
+    for (let i = 0; i < comments.length; i += chunkSize) {
+        chunks.push(comments.slice(i, i + chunkSize));
+    }
+    if (chunks.length < req.query.page) {
+        console.log(null)
+        res.json(null)
+    } else {
+        const chunk = chunks[req.query.page - 1];
+        console.log(chunk)
+        res.json(chunk)
+    }
 }
 const getCommentsByPostAndUser = async (req, res) => {
     const comments = await comment.getCommentsByPostAndUser(req.params.pid, req.params.id)
@@ -32,7 +51,7 @@ const getCommentById = async (req, res) => {
     res.json(find)
 }
 const updateComment = async (req, res) => {
-    const find = await comment.updateComment(req.params.id, req.body.text);
+    const find = await comment.updateComment(req.body.id, req.body.text);
     if (!find) {
         return res.status(404).json({errors: ['Comment not found']});
     }

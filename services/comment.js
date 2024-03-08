@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const User = require('./user')
 
 /**
  * Creates a new comment.
@@ -21,7 +22,7 @@ const createComment = async (text, postId, userId) => {
  * @returns {Promise} A Promise that resolves to an array of comments made by the user.
  */
 const getCommentsByUser = async (userId) => {
-    return await Comment.find({userId: userId}).lean();
+    return await Comment.find({userId: userId}).sort({date: -1}).lean();
 };
 
 /**
@@ -31,7 +32,14 @@ const getCommentsByUser = async (userId) => {
  * @returns {Promise} A Promise that resolves to an array of comments associated with the post.
  */
 const getCommentsByPost = async (postId) => {
-    return await Comment.find({postId: postId}).lean();
+    const comments =  await Comment.find({postId: postId}).sort({date: -1}).lean();
+    const commentsMembers = [];
+    for (const comment of comments) {
+        const user = await User.getUserById(comment.userId);
+        const commentData = {_id:comment._id,text:comment.text};
+        commentsMembers.push({"first":commentData,"second":user});
+    }
+    return commentsMembers;
 };
 
 /**
@@ -42,7 +50,7 @@ const getCommentsByPost = async (postId) => {
  * @returns {Promise} A Promise that resolves to an array of comments associated with the post and user.
  */
 const getCommentsByPostAndUser = async (postId, userId) => {
-    return await Comment.find({postId: postId, userId: userId}).lean();
+    return await Comment.find({postId: postId, userId: userId}).sort({date: 1}).lean();
 };
 
 /**
@@ -120,5 +128,6 @@ module.exports = {
     deleteCommentsByPost,
     deleteCommentById,
     updateComment,
-    getCommentsAmount
+    getCommentsAmount,
+    getCommentById
 };

@@ -20,7 +20,7 @@ const createPost = async (content, img, userId, date) => {
     // Convert the Base64 data to a Buffer
     const imageData = Buffer.from(base64Data, 'base64');
     if (date === undefined)
-        date = new Date().toISOString().substring(0, 10);//format of yyyy-mm-dd
+        date = new Date().toISOString();
 
     const post = new Post({
         content: content, img: imageData, userId: userId,date:date

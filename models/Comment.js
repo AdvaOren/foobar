@@ -10,9 +10,13 @@ const Comment = new Schema({
         type: String,
         required: true
     },
-    postId:  {
+    postId: {
         type: String,
         required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 
 });
