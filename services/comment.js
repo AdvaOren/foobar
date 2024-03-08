@@ -72,11 +72,12 @@ const getCommentById = async (id) => {
  * @returns {Promise} A Promise that resolves to the updated comment or null if comment not found.
  */
 const updateComment = async (id, text) => {
-    const comment = await getCommentById(id);
+    return await Comment.findOneAndUpdate({_id: id}, {text: text}, {new: true}).lean();
+    /*const comment = await getCommentById(id);
     if (!comment) return null;
     comment.text = text;
     await comment.save();
-    return comment;
+    return comment;*/
 };
 
 /**
@@ -88,7 +89,7 @@ const updateComment = async (id, text) => {
 const deleteCommentById = async (id) => {
     const comment = await getCommentById(id);
     if (!comment) return null;
-    await comment.remove();
+    await Comment.deleteOne({_id:id});
     return comment;
 };
 
