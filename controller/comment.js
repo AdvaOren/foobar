@@ -5,7 +5,7 @@ const createComment = async (req, res) => {
 }
 const getCommentsByUser = async (req, res) => {
     const comments = await comment.getCommentsByUser(req.params.id)
-    if (comments) {
+    if (!comments) {
         return res.status(404).json({errors: ['No comments found']});
     }
     res.json(comments)
@@ -28,8 +28,7 @@ const getCommentsByPost = async (req, res) => {
         chunks.push(comments.slice(i, i + chunkSize));
     }
     if (chunks.length < req.query.page) {
-        console.log(null)
-        res.json(null)
+        res.json([])
     } else {
         const chunk = chunks[req.query.page - 1];
         console.log(chunk)
