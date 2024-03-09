@@ -27,12 +27,12 @@ const isLoggedIn = (req, res, next) => {
 }
 const processLogin = async (req, res) => {
     // Check credentials
-    if (await userService.findUserEx(req.body.email, req.body.password)) {
+    if (await userService.findUserEx(req.body.id)) {
         // We now want to generate the JWT.
         // The token can contain whatever information we desire.
         // However, do not put sensitive information there, like passwords.
         // Here, we will only put the *validated* username
-        const data = { username: req.body.username }
+        const data = { id: req.body.id }
         // Generate the token.
         const token = jwt.sign(data, key)
         // Return the token to the browser

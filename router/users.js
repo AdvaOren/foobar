@@ -6,7 +6,6 @@ const tokens = require("../controller/tokens");
 const router = express.Router();
 
 
-//TODO add token
 
 // Create new user
 router.post('/', user.createUser);

@@ -29,7 +29,6 @@ const getEmails = async (req, res) => {
     res.json(await user.getEmails());
 }
 const updateUser = async (req, res) => {
-    console.log("im innn wwww");
     if (req.body.userId !== req.params.id) {
         return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
     }

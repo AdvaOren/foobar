@@ -25,8 +25,18 @@ const createFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to null.
  */
 const deleteFriends = async (requester, requested) => {
-    await Friends.deleteOne({ requester: requester, requested: requested });
-    await Friends.deleteOne({ requester: requested, requested: requester });
+    await Friends.deleteOne({
+        $or: [
+            { requester: requester, requested: requested },
+            { requester: requested, requested: requester }
+        ]
+    });
+    await Friends.deleteOne({
+        $or: [
+            { requester: requester, requested: requested },
+            { requester: requested, requested: requester }
+        ]
+    });
     return null;
 };
 
@@ -77,6 +87,24 @@ const getFriendsOfUser = async (user) => {
     return userFriends;
 };
 
+const getAllFriendsRequest = async (user) => {
+    const friendsApprove = await Friends.find({ requester: user, status: "approve" }).lean();
+    const friendsWait = await Friends.find({ requested: user, status: "wait" }).lean();
+    if (!friendsApprove && !friendsWait)
+    return { userFriends: [] };
+    const userFriends = [];
+    if(friendsApprove) {
+        friendsApprove.forEach((value) => {
+            userFriends.push({friendId: value.requested, status: "approve"});
+        });
+    }
+    if(friendsWait){
+        friendsWait.forEach((value) => {
+            userFriends.push({friendId: value.requester, status: "wait"});
+        });
+    }
+    return userFriends;
+}
 /**
  *
  * @param requester the requester of the friendship
@@ -142,7 +170,7 @@ const getLastPostOfFriends = async (id) => {
 
 
 module.exports = {
-    createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
+    createFriends, getAllFriendsRequest, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
     getFriendsOfUser,
     getLastPostOfFriends,
 };

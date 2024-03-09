@@ -132,8 +132,8 @@ const deleteUserByEmail = async (email) => {
  * @param {string} password - the user's password
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
-const findUserEx = async (email, password) => {
-    return await User.findOne({ email: email, password: password }).lean();
+const findUserEx = async (id) => {
+    return await User.findOne({ _id: id }).lean();
 };
 
 module.exports = {

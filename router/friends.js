@@ -9,8 +9,8 @@ router.get('/:id/friends', tokens.isLoggedIn, friend.getFriendsOfUser)
 // Creates a new friendship between two users.
 router.post('/:id/friends', tokens.isLoggedIn, friend.createFriends);
 
-// TODO Add accept req
-//router.patch('users/:id/friends/:fid', )
+// Accept friendship between two users
+router.patch('/:id/friends/:fid', tokens.isLoggedIn, friend.acceptFriendship);
 
 // Deletes a friendship between two users.
 router.delete('/:id/friends/:fid', tokens.isLoggedIn, friend.deleteFriends);
@@ -18,6 +18,7 @@ router.delete('/:id/friends/:fid', tokens.isLoggedIn, friend.deleteFriends);
 // Checks if two users are friends.
 router.get('/:id/friends/:fid', tokens.isLoggedIn, friend.deleteFriends);
 
+router.get('/:id/allFriendsRequest', tokens.isLoggedIn, friend.getAllFriendsRequest)
 
 module.exports =
     router

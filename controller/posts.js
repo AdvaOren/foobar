@@ -3,6 +3,8 @@ const friends = require("../services/friend");
 const like = require("../services/like.js");
 const comment = require("../services/comment.js");
 const user = require("../services/user");
+const jwt = require("jsonwebtoken");
+
 /**
  * name: createPost
  * action: creates post
@@ -34,7 +36,7 @@ const updatePostContent = async (req, res) => {
     const author = await posts.getAuthor(req.params.pid);
     // check if request is valid
     if (req.params.id !== author.id) {
-        return res.status(500).json({errors: ["unable to update, requester is not the author"]});
+        return res.status(500).json({ errors: ["unable to update, requester is not the author"] });
     }
     await posts.updatePostImg(req.params.pid, req.body.img);
     res.json(await posts.updatePostContent(req.params.pid, req.body.content))
@@ -46,7 +48,7 @@ const updatePostContent = async (req, res) => {
 const updatePostImg = async (req, res) => {
     const author = await posts.getAuthor(req.params.pid);
     if (req.params.id !== author.id) {
-        return res.status(500).json({errors: ["unable to update, requester is not the author"]});
+        return res.status(500).json({ errors: ["unable to update, requester is not the author"] });
     }
     res.json(await posts.updatePostImg(req.params.id, req.body.img))
 }
@@ -63,8 +65,14 @@ const getAuthor = async (req, res) => {
  * action: returns 20 latest posts of friends and 5 latest posts in general
  * */
 const get25Posts = async (req, res) => {
-    let list = await posts.latestFivePost(req.query.id);
-    list = list.concat(await friends.getLastPostOfFriends(req.query.id));
+    const token = req.headers.authorization.split(" ")[1];
+    // Assuming 'token' is the JWT token received from the server
+    const decodedToken = jwt.decode(token);
+
+    // Now you can access the username from the decoded token
+    const userId = decodedToken.id;
+    let list = await posts.latestFivePost(userId);
+    list = list.concat(await friends.getLastPostOfFriends(userId));
     const chunkSize = 5; // Number of objects per chunk
 
     // Split the list into chunks
@@ -72,9 +80,7 @@ const get25Posts = async (req, res) => {
     for (let i = 0; i < list.length; i += chunkSize) {
         chunks.push(list.slice(i, i + chunkSize));
     }
-
     const chunk = chunks[req.query.page - 1];
-    console.log(chunk)
     res.json(chunk)
 
 }
@@ -85,7 +91,7 @@ const get25Posts = async (req, res) => {
 const deletePost = async (req, res) => {
     const postAuthor = await posts.getAuthor(req.params.pid)
     if (req.params.id !== postAuthor.id) {
-        return res.status(500).json({errors: ["unable to delete, user is not the author"]});
+        return res.status(500).json({ errors: ["unable to delete, user is not the author"] });
     }
     const post = posts.deletePost(req.params.pid);
     await like.removeLikesByPost(req.params.pid);
