@@ -57,7 +57,9 @@ const removeLikesByUser = async (userId) => {
  */
 const checkIfLike = async (userId, postId) => {
     const like = await Like.findOne({userId: userId, postId: postId});
-    if (!like) return false;
+    if (!like) {
+        return false;
+    }
     return true;
 };
 

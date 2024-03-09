@@ -34,7 +34,7 @@ router.get('/:id/posts', tokens.isLoggedIn, post.getPostsByUser);
 router.get('/posts/:pid', tokens.isLoggedIn, post.getAuthor);
 
 //handle likes
-router.post(`/:pid/like/:userId`, tokens.isLoggedIn, like.handleLike);
+router.post(`/:id/posts/:pid/like/`, tokens.isLoggedIn, like.handleLike);
 
 //get comments of post
 router.get(`/:pid/comments`, tokens.isLoggedIn, comment.getCommentsByPost)
@@ -42,8 +42,13 @@ router.get(`/:pid/comments`, tokens.isLoggedIn, comment.getCommentsByPost)
 //create comment of user id in post pid
 router.post(`/:id/posts/:pid/comments`, tokens.isLoggedIn, comment.createComment)
 
-module.exports =
-    router
+//delete comment by ID
+router.delete(`/:id/posts/:pid/comments`,tokens.isLoggedIn, comment.deleteCommentById)
+
+//update comment by ID
+router.put(`/:id/posts/:pid/comments`,tokens.isLoggedIn, comment.updateComment);
+
+module.exports = router
 
 
 

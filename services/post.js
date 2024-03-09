@@ -10,16 +10,24 @@ const Comment = require('./comment');
  * @param {string} content - The content of the post.
  * @param {buffer} img - The image attached to the post.
  * @param {string} userId - The ID of the user who created the post.
- * @param {Date} [date] - Optional. The date of the post.
+ * @param {String} [date] - Optional. The date of the post.
  * @returns {Promise} A Promise that resolves to the created post.
  */
 const createPost = async (content, img, userId, date) => {
+    // Extract the image data from the Base64 string
+    const base64Data = img.replace(/^data:image\/\w+;base64,/, '');
+
+    // Convert the Base64 data to a Buffer
+    const imageData = Buffer.from(base64Data, 'base64');
+    if (date === undefined)
+        date = new Date().toISOString();
+
     const post = new Post({
-        content: content, img: img, userId: userId
+        content: content, img: imageData, userId: userId,date:date
     });
-    if (date)
-        post.date = date;
-    return await post.save();
+
+    const savedPost = await post.save();
+    return savedPost.toObject();
 };
 
 /**
@@ -50,11 +58,7 @@ const getPostsByUser = async (userId) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostContent = async (id, content) => {
-    const post = await getPostById(id);
-    if (!post) return null;
-    post.content = content;
-    await post.save();
-    return post;
+    return await Post.findOneAndUpdate({_id: id}, {content: content}, {new: true}).lean();
 };
 
 /**
@@ -65,11 +69,8 @@ const updatePostContent = async (id, content) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostImg = async (id, img) => {
-    const post = await getPostById(id);
-    if (!post) return null;
-    post.img = img;
-    await post.save();
-    return post;
+    return await Post.findOneAndUpdate({_id: id}, {img: img}, {new: true}).lean();
+
 };
 
 /**
@@ -81,7 +82,7 @@ const updatePostImg = async (id, img) => {
 const deletePost = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    await post.remove();
+    await Post.deleteOne({_id : id});
     return post;
 };
 
@@ -94,7 +95,7 @@ const deletePost = async (id) => {
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    return {userId: post.userId}.lean();
+    return {userId: post.userId};
 };
 
 /**
@@ -111,7 +112,7 @@ const latestFivePost = async (id) => {
     for (const post of postList) {
         const member = await User.getUserById(post.userId);
         const likeAmount = await Like.getLikeAmount(post._id);
-        const isLiked = await  Like.checkIfLike(post.userId,post._id);
+        const isLiked = await  Like.checkIfLike(id,post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
         const postInfo = {"likeAmount" : likeAmount.likes, "isLiked" : isLiked, "postId": post._id.toString(), "commentsAmount" : commentsAmount, "userId" : id};
         postsMembers.push({"first":post,"second":member,"third":postInfo})
