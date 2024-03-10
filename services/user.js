@@ -61,6 +61,17 @@ const getEmails = async () => {
     return { emails: emailArray }.lean();
 };
 
+const getName = async (id) => {
+    const user = await User.findById(id);
+    if (user) {
+        // Concatenate firstName and lastName
+        return user.firstName + ' ' + user.lastName;
+    } else {
+        // User not found
+        return null;
+    }
+}
+
 /**
  * Updates a user's information.
  *
@@ -132,8 +143,8 @@ const deleteUserByEmail = async (email) => {
  * @param {string} password - the user's password
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
-const findUserEx = async (email, password) => {
-    return await User.findOne({ email: email, password: password }).lean();
+const findUserEx = async (id) => {
+    return await User.findOne({ _id: id }).lean();
 };
 
 module.exports = {
@@ -145,5 +156,6 @@ module.exports = {
     deleteUserByEmail,
     getEmails,
     updateUserImg,
-    findUserEx
+    findUserEx,
+    getName
 };

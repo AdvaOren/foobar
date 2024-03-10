@@ -46,8 +46,20 @@ const getPostById = async (id) => {
  *
  * @returns {Promise} A Promise that resolves to an array of all posts of user.
  */
-const getPostsByUser = async (userId) => {
-    return await Post.find({userId: userId}).lean();
+const getPostsByUser = async (id,requester) => {
+    const areFriends = await fServices.checkIfFriends(requester,id);
+    if (!areFriends && id !== requester)
+        return ([])
+    const temp = await Post.find({userId: id}).sort({date: -1}).lean();
+    const posts = [];
+    for (const post of temp) {
+        const likeAmount = await Like.getLikeAmount(post._id);
+        const isLiked = await  Like.checkIfLike(requester,post._id);
+        const commentsAmount = await Comment.getCommentsAmount(post._id);
+        const postInfo = {"likeAmount" : likeAmount.likes, "isLiked" : isLiked, "postId": post._id.toString(), "commentsAmount" : commentsAmount, "userId" : id};
+        posts.push({"first":post,"second":postInfo})
+    }
+    return posts;
 };
 
 /**

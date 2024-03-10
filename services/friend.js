@@ -2,6 +2,7 @@ const Friends = require('../models/Friends');
 const User = require("./user");
 const Like = require("./like");
 const Comment = require("./comment");
+const {request} = require("express");
 
 /**
  * Creates a new friendship between two users.
@@ -25,8 +26,18 @@ const createFriends = async (requester, requested) => {
  * @returns {Promise} A Promise that resolves to null.
  */
 const deleteFriends = async (requester, requested) => {
-    await Friends.deleteOne({ requester: requester, requested: requested });
-    await Friends.deleteOne({ requester: requested, requested: requester });
+    await Friends.deleteOne({
+        $or: [
+            { requester: requester, requested: requested },
+            { requester: requested, requested: requester }
+        ]
+    });
+    await Friends.deleteOne({
+        $or: [
+            { requester: requester, requested: requested },
+            { requester: requested, requested: requester }
+        ]
+    });
     return null;
 };
 
@@ -66,6 +77,38 @@ const checkIfFriends = async (requester, requested) => {
  * @param {string} user - The ID of the user.
  * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
  */
+const getAskFriendsOfUser = async (user) => {
+    const friends = await Friends.find({ requested: user, status: "wait" }).lean();
+    if (!friends)
+        return { friends: [] };
+    const userFriends = [];
+    for (const friend of friends){
+        const name = await User.getName(friend.requester);
+        userFriends.push({requester:friend.requester,requested:friend.requested,requesterName:name});
+    }
+    return userFriends;
+};
+
+const getFriendship = async (requester,requested) => {
+    let friendship = await Friends.find({requester:requester,requested:requested}).lean();
+    if (friendship.length === 0) {
+        friendship = await Friends.find({requester: requested, requested: requester}).lean();
+        if (friendship.length === 0)
+            return {friendship: []}
+        else {
+            friendship[0].status = "sent";
+            return friendship[0]
+        }
+    }
+    return friendship[0];
+}
+
+/**
+ * Retrieves all friends of a user.
+ *
+ * @param {string} user - The ID of the user.
+ * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
+ */
 const getFriendsOfUser = async (user) => {
     const friends = await Friends.find({ requester: user, status: "approve" }).lean();
     if (!friends)
@@ -77,6 +120,24 @@ const getFriendsOfUser = async (user) => {
     return userFriends;
 };
 
+const getAllFriendsRequest = async (user) => {
+    const friendsApprove = await Friends.find({ requester: user, status: "approve" }).lean();
+    const friendsWait = await Friends.find({ requested: user, status: "wait" }).lean();
+    if (!friendsApprove && !friendsWait)
+    return { userFriends: [] };
+    const userFriends = [];
+    if(friendsApprove) {
+        friendsApprove.forEach((value) => {
+            userFriends.push({friendId: value.requested, status: "approve"});
+        });
+    }
+    if(friendsWait){
+        friendsWait.forEach((value) => {
+            userFriends.push({friendId: value.requester, status: "wait"});
+        });
+    }
+    return userFriends;
+}
 /**
  *
  * @param requester the requester of the friendship
@@ -142,7 +203,9 @@ const getLastPostOfFriends = async (id) => {
 
 
 module.exports = {
-    createFriends, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
+    createFriends, getAllFriendsRequest, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
     getFriendsOfUser,
     getLastPostOfFriends,
+    getAskFriendsOfUser,
+    getFriendship
 };
