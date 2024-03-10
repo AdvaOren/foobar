@@ -22,7 +22,7 @@ const getFriendsOfUser = async (req, res) => {
 }
 const getAllFriendsRequest = async (req, res) => {
     // Extract the image data from the Base64 string
-    
+
     const friendsreqList= await friend.getAllFriendsRequest(req.params.id);
     const friendsList = await Promise.all(friendsreqList.map(async (friend) => {
         const friendDetails = await user.getUserById(friend.friendId);
@@ -39,9 +39,26 @@ const acceptFriendship =async(req,res)=>{
 
 }
 
+const getAskFriendsOfUser = async (req,res) => {
+    const asks = await friend.getAskFriendsOfUser(req.params.id);
+    res.json(asks);
+}
+
+const getFriendship = async (req,res) => {
+    const friendship =await friend.getFriendship(req.params.id,req.params.fid)
+    res.json(friendship);
+}
+
 const getLastPostOfFriends = async (req, res) => {
     res.json(await friend.getLastPostOfFriends(req.query.id))
 }
 module.exports = {
-    createFriends,acceptFriendship, getAllFriendsRequest, deleteFriends, deleteAllFriendsByUser, checkIfFriends, getFriendsOfUser, getLastPostOfFriends
+    createFriends,
+   acceptFriendship, getAllFriendsRequest, deleteFriends,
+    deleteAllFriendsByUser,
+    checkIfFriends,
+    getFriendsOfUser,
+    getLastPostOfFriends,
+    getAskFriendsOfUser,
+    getFriendship
 }

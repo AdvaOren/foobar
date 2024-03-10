@@ -61,6 +61,17 @@ const getEmails = async () => {
     return { emails: emailArray }.lean();
 };
 
+const getName = async (id) => {
+    const user = await User.findById(id);
+    if (user) {
+        // Concatenate firstName and lastName
+        return user.firstName + ' ' + user.lastName;
+    } else {
+        // User not found
+        return null;
+    }
+}
+
 /**
  * Updates a user's information.
  *
@@ -145,5 +156,6 @@ module.exports = {
     deleteUserByEmail,
     getEmails,
     updateUserImg,
-    findUserEx
+    findUserEx,
+    getName
 };

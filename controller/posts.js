@@ -26,7 +26,23 @@ const getPostById = async (req, res) => {
  * action: returns all posts of user
  * */
 const getPostsByUser = async (req, res) => {
-    res.json(await posts.getPostsByUser(req.params.id))
+    const userPosts = await posts.getPostsByUser(req.params.id,req.id);
+    const chunkSize = 10; // Number of objects per chunk
+
+    // Split the list into chunks
+    const chunks = [];
+    for (let i = 0; i < userPosts.length; i += chunkSize) {
+        chunks.push(userPosts.slice(i, i + chunkSize));
+    }
+    if (chunks.length < req.query.page) {
+        console.log(null)
+        res.json(null)
+    }
+    else {
+        const chunk = chunks[req.query.page - 1];
+        console.log(chunk)
+        res.json(chunk)
+    }
 }
 /**
  * name: updatePostContent
@@ -73,14 +89,16 @@ const getAuthor = async (req, res) => {
  * action: returns 20 latest posts of friends and 5 latest posts in general
  * */
 const get25Posts = async (req, res) => {
-    const token = req.headers.authorization.split(" ")[1];
+    let list = await posts.latestFivePost(req.id);
+    list = list.concat(await friends.getLastPostOfFriends(req.id));
+    /*const token = req.headers.authorization.split(" ")[1];
     // Assuming 'token' is the JWT token received from the server
     const decodedToken = jwt.decode(token);
 
     // Now you can access the username from the decoded token
     const userId = decodedToken.id;
     let list = await posts.latestFivePost(userId);
-    list = list.concat(await friends.getLastPostOfFriends(userId));
+    list = list.concat(await friends.getLastPostOfFriends(userId));*/
     const chunkSize = 5; // Number of objects per chunk
 
     // Split the list into chunks

@@ -2,6 +2,7 @@ const Friends = require('../models/Friends');
 const User = require("./user");
 const Like = require("./like");
 const Comment = require("./comment");
+const {request} = require("express");
 
 /**
  * Creates a new friendship between two users.
@@ -69,6 +70,31 @@ const checkIfFriends = async (requester, requested) => {
     if (!friends) return false;
     return true;
 };
+
+/**
+ * Retrieves all friends of a user.
+ *
+ * @param {string} user - The ID of the user.
+ * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
+ */
+const getAskFriendsOfUser = async (user) => {
+    const friends = await Friends.find({ requested: user, status: "wait" }).lean();
+    if (!friends)
+        return { friends: [] };
+    const userFriends = [];
+    for (const friend of friends){
+        const name = await User.getName(friend.requester);
+        userFriends.push({requester:friend.requester,requested:friend.requested,requesterName:name});
+    }
+    return userFriends;
+};
+
+const getFriendship = async (requester,requested) => {
+    const friendship =  await Friends.find({requester:requester,requested:requested}).lean();
+    if (friendship === [])
+        return null
+    return friendship[0];
+}
 
 /**
  * Retrieves all friends of a user.
@@ -173,4 +199,6 @@ module.exports = {
     createFriends, getAllFriendsRequest, deleteFriends, deleteAllFriendsByUser, checkIfFriends, acceptFriendship,
     getFriendsOfUser,
     getLastPostOfFriends,
+    getAskFriendsOfUser,
+    getFriendship
 };
