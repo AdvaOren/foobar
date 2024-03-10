@@ -48,8 +48,8 @@ const getPostById = async (id) => {
  */
 const getPostsByUser = async (id,requester) => {
     const areFriends = await fServices.checkIfFriends(requester,id);
-    if (!areFriends)
-        return ({posts: []})
+    if (!areFriends && id !== requester)
+        return ([])
     const temp = await Post.find({userId: id}).sort({date: -1}).lean();
     const posts = [];
     for (const post of temp) {
