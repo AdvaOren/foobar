@@ -31,7 +31,6 @@ const getCommentsByPost = async (req, res) => {
         res.json([])
     } else {
         const chunk = chunks[req.query.page - 1];
-        console.log(chunk)
         res.json(chunk)
     }
 }
