@@ -91,7 +91,7 @@ const getAskFriendsOfUser = async (user) => {
 
 const getFriendship = async (requester,requested) => {
     const friendship =  await Friends.find({requester:requester,requested:requested}).lean();
-    if (friendship === [])
+    if (friendship == [])
         return null
     return friendship[0];
 }

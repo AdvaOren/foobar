@@ -118,10 +118,8 @@ const updateUserImg = async (id, img) => {
  * @returns {Promise} A Promise that resolves to the deleted user or null if user not found.
  */
 const deleteUser = async (id) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    await user.remove();
-    return user;
+    await User.findOneAndDelete({ _id: id });
+    return null;
 };
 
 /**

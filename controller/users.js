@@ -1,6 +1,9 @@
 const user = require("../services/user.js");
 const like = require("../services/like");
 const comment = require("../services/comment");
+const post = require("../models/post.js");
+const friend = require("../services/friend.js");
+const posts = require("../services/post.js");
 
 async function createUser(req, res) {
     // Extract the image data from the Base64 string
@@ -70,13 +73,13 @@ const updateUserAll = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    if (req.params.userId !== req.params.id) {
-        return res.status(500).json({ errors: ["unable to delete, requester is not the user"] });
-    }
     await like.removeLikesByUser(req.params.id);
-    await comment.deleteCommentsByUser(req.params.id)
+    await comment.deleteCommentsByUser(req.params.id);
+    await friend.deleteAllFriendsByUser(req.params.id);
+    await posts.deleteAllPostsByUser(req.params.id);
     res.json(await user.deleteUser(req.params.id));
 }
+
 const deleteUserByEmail = async (req, res) => {
     if (req.params.userId !== req.params.id) {
         return res.status(500).json({ errors: ["unable to delete, requester is not the user"] });
