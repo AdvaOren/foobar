@@ -14,7 +14,10 @@ async function createUser(req, res) {
 
 
     const newUser = await user.createUser(req.body.email, req.body.firstName, req.body.lastName, req.body.password, imageData);
-    res.json(newUser.id);
+    if (newUser !== null)
+        res.json(newUser.id);
+    else
+        res.json(null);
 }
 
 const getUserByEmail = async (req, res) => {
