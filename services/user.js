@@ -82,10 +82,10 @@ const getName = async (id) => {
  * @param {string} password - The user's password.
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
-const updateUser = async (id, email, firstName, lastName, password) => {
+const updateUser = async (id, firstName, lastName, password) => {
     const user = await User.findOneAndUpdate(
         { _id: id }, 
-        { email, firstName, lastName, password },
+        { firstName, lastName, password },
     );
     if (!user) {
         return null;

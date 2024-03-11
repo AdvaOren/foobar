@@ -30,7 +30,6 @@ const getPostsByUser = async (req, res) => {
     if (userPosts == []) {
         return res.status(404).json({errors: ['No posts found']});
     }
-    console.log(userPosts)
     res.json(userPosts)
 }
 /**
@@ -83,7 +82,6 @@ const get25Posts = async (req, res) => {
     if (list == []) {
         return res.status(404).json({errors: ['No comments found']});
     }
-    console.log(list)
     res.json(list)
     /*const token = req.headers.authorization.split(" ")[1];
     // Assuming 'token' is the JWT token received from the server

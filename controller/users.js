@@ -35,8 +35,7 @@ const updateUser = async (req, res) => {
     if (req.body.userId !== req.params.id) {
         return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
     }
-    res.json(await user.updateUser(req.params
-        .id, req.body.email, req.body.firstName, req.body.lastName, req.body.password));
+    res.json(await user.updateUser(req.params.id, req.body.firstName, req.body.lastName, req.body.password));
 }
 
 const updateUserImg = async (req, res) => {
@@ -55,14 +54,13 @@ const updateUserAll = async (req, res) => {
         if (req.body.userId !== req.params.id) {
             return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
         }
-
         // Update user image
         const base64Data = req.body.img.replace(/^data:image\/\w+;base64,/, '');
         const imageData = Buffer.from(base64Data, 'base64');
         await user.updateUserImg(req.params.id, imageData);
 
         // Update user details
-        const updateUserResult = await user.updateUser(req.params.id, req.body.email, req.body.firstName, req.body.lastName, req.body.password);
+        const updateUserResult = await user.updateUser(req.params.id, req.body.firstName, req.body.lastName, req.body.password);
 
         // Send response
         res.json(updateUserResult);
