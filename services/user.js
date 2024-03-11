@@ -72,6 +72,16 @@ const getName = async (id) => {
     }
 }
 
+const getImg = async (id) => {
+    const user = await User.findById(id).lean();
+    if (user) {
+        return user.img
+    } else {
+        // User not found
+        return null;
+    }
+}
+
 /**
  * Updates a user's information.
  *
@@ -155,5 +165,6 @@ module.exports = {
     getEmails,
     updateUserImg,
     findUserEx,
-    getName
+    getName,
+    getImg
 };

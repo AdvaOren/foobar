@@ -16,10 +16,7 @@ const checkIfFriends = async (req, res) => {
 }
 const getFriendsOfUser = async (req, res) => {
     const friendsId = await friend.getFriendsOfUser(req.params.id);
-    const friendsList = await Promise.all(friendsId.map(async (friendId) => {
-        return await user.getUserById(friendId);
-    }));
-    res.json(friendsList);
+    res.json(friendsId);
 }
 const getAllFriendsRequest = async (req, res) => {
     // Extract the image data from the Base64 string
