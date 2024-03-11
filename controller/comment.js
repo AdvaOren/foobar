@@ -39,7 +39,7 @@ const updateComment = async (req, res) => {
     res.json(find);
 }
 const deleteCommentById = async (req, res) => {
-    res.json(await comment.deleteCommentById(req.query.cid));
+    res.json(await comment.deleteCommentById(req.params.cid));
 }
 const deleteCommentsByPost = async (req, res) => {
     return await comment.deleteCommentsByPost(req.params.pid);

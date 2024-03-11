@@ -48,6 +48,9 @@ router.delete(`/:id/posts/:pid/comments`,tokens.isLoggedIn, comment.deleteCommen
 //update comment by ID
 router.put(`/:id/posts/:pid/comments`,tokens.isLoggedIn, comment.updateComment);
 
+//deletes comment by ID
+router.delete(`/:id/posts/:pid/comments/:cid`,tokens.isLoggedIn,comment.deleteCommentById)
+
 module.exports = router
 
 
