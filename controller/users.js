@@ -51,7 +51,7 @@ const updateUserImg = async (req, res) => {
 
 const updateUserAll = async (req, res) => {
     try {
-        if (req.body.userId !== req.params.id) {
+        if (req.body._id !== req.params.id) {
             return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
         }
         // Update user image

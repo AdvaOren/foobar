@@ -120,8 +120,12 @@ const getFriendsOfUserId = async (user) => {
     return userFriends;
 };
 
-const getFriendsOfUser = async (user) => {
-    const friends = await Friends.find({ requester: user, status: "approve" }).lean();
+const getFriendsOfUser = async (requester,requested) => {
+    const areTheyFriends = await checkIfFriends(requester,requested)
+    if (!areTheyFriends) {
+        return [];
+    }
+    const friends = await Friends.find({ requester: requester, status: "approve" }).lean();
     if (!friends)
         return [];
     const userFriends = [];

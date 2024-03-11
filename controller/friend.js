@@ -15,7 +15,7 @@ const checkIfFriends = async (req, res) => {
     res.json(await friend.checkIfFriends(req.body.user1, req.body.user2))
 }
 const getFriendsOfUser = async (req, res) => {
-    const friendsId = await friend.getFriendsOfUser(req.params.id);
+    const friendsId = await friend.getFriendsOfUser(req.params.id,req.id);
     res.json(friendsId);
 }
 const getAllFriendsRequest = async (req, res) => {
