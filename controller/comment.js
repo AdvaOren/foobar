@@ -32,7 +32,7 @@ const getCommentById = async (req, res) => {
     res.json(find)
 }
 const updateComment = async (req, res) => {
-    const find = await comment.updateComment(req.body.cid, req.body.text);
+    const find = await comment.updateComment(req.params.cid, req.body.text);
     if (!find) {
         return res.status(404).json({errors: ['Comment not found']});
     }
