@@ -72,6 +72,16 @@ const getName = async (id) => {
     }
 }
 
+const getImg = async (id) => {
+    const user = await User.findById(id).lean();
+    if (user) {
+        return user.img
+    } else {
+        // User not found
+        return null;
+    }
+}
+
 /**
  * Updates a user's information.
  *
@@ -82,10 +92,10 @@ const getName = async (id) => {
  * @param {string} password - The user's password.
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
-const updateUser = async (id, email, firstName, lastName, password) => {
+const updateUser = async (id, firstName, lastName, password) => {
     const user = await User.findOneAndUpdate(
         { _id: id }, 
-        { email, firstName, lastName, password },
+        { firstName, lastName, password },
     );
     if (!user) {
         return null;
@@ -118,10 +128,8 @@ const updateUserImg = async (id, img) => {
  * @returns {Promise} A Promise that resolves to the deleted user or null if user not found.
  */
 const deleteUser = async (id) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    await user.remove();
-    return user;
+    await User.findOneAndDelete({ _id: id });
+    return null;
 };
 
 /**
@@ -157,5 +165,6 @@ module.exports = {
     getEmails,
     updateUserImg,
     findUserEx,
-    getName
+    getName,
+    getImg
 };

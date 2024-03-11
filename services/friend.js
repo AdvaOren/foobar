@@ -109,14 +109,27 @@ const getFriendship = async (requester,requested) => {
  * @param {string} user - The ID of the user.
  * @returns {Promise} A Promise that resolves to an array of user IDs representing friends.
  */
-const getFriendsOfUser = async (user) => {
+const getFriendsOfUserId = async (user) => {
     const friends = await Friends.find({ requester: user, status: "approve" }).lean();
     if (!friends)
-        return { friends: [] };
+        return [];
     const userFriends = [];
     friends.forEach((value) => {
         userFriends.push(value.requested);
     });
+    return userFriends;
+};
+
+const getFriendsOfUser = async (user) => {
+    const friends = await Friends.find({ requester: user, status: "approve" }).lean();
+    if (!friends)
+        return [];
+    const userFriends = [];
+    for (const friend of friends){
+        const name = await User.getName(friend.requested);
+        const img = await User.getImg(friend.requested);
+        userFriends.push({requester: friend.requester, requested: friend.requested, requesterName: name, img: img});
+    }
     return userFriends;
 };
 
@@ -207,5 +220,6 @@ module.exports = {
     getFriendsOfUser,
     getLastPostOfFriends,
     getAskFriendsOfUser,
-    getFriendship
+    getFriendship,
+    getFriendsOfUserId
 };

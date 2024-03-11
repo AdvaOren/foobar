@@ -1,6 +1,9 @@
 const user = require("../services/user.js");
 const like = require("../services/like");
 const comment = require("../services/comment");
+const post = require("../models/post.js");
+const friend = require("../services/friend.js");
+const posts = require("../services/post.js");
 
 async function createUser(req, res) {
     // Extract the image data from the Base64 string
@@ -32,8 +35,7 @@ const updateUser = async (req, res) => {
     if (req.body.userId !== req.params.id) {
         return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
     }
-    res.json(await user.updateUser(req.params
-        .id, req.body.email, req.body.firstName, req.body.lastName, req.body.password));
+    res.json(await user.updateUser(req.params.id, req.body.firstName, req.body.lastName, req.body.password));
 }
 
 const updateUserImg = async (req, res) => {
@@ -52,14 +54,13 @@ const updateUserAll = async (req, res) => {
         if (req.body.userId !== req.params.id) {
             return res.status(500).json({ errors: ["unable to update, requester is not the user"] });
         }
-
         // Update user image
         const base64Data = req.body.img.replace(/^data:image\/\w+;base64,/, '');
         const imageData = Buffer.from(base64Data, 'base64');
         await user.updateUserImg(req.params.id, imageData);
 
         // Update user details
-        const updateUserResult = await user.updateUser(req.params.id, req.body.email, req.body.firstName, req.body.lastName, req.body.password);
+        const updateUserResult = await user.updateUser(req.params.id, req.body.firstName, req.body.lastName, req.body.password);
 
         // Send response
         res.json(updateUserResult);
@@ -70,13 +71,13 @@ const updateUserAll = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    if (req.params.userId !== req.params.id) {
-        return res.status(500).json({ errors: ["unable to delete, requester is not the user"] });
-    }
     await like.removeLikesByUser(req.params.id);
-    await comment.deleteCommentsByUser(req.params.id)
+    await comment.deleteCommentsByUser(req.params.id);
+    await friend.deleteAllFriendsByUser(req.params.id);
+    await posts.deleteAllPostsByUser(req.params.id);
     res.json(await user.deleteUser(req.params.id));
 }
+
 const deleteUserByEmail = async (req, res) => {
     if (req.params.userId !== req.params.id) {
         return res.status(500).json({ errors: ["unable to delete, requester is not the user"] });

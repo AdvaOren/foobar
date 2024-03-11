@@ -16,14 +16,15 @@ router.get('/:email', user.getUserByEmail);
 // Finds a user by his ID.
 router.get('/:id', user.getUserById);
 
-// Updates a user's information.
-router.put('/:id', tokens.isLoggedIn, user.updateUser);
 
 // Updates a user's profile image.
 router.put('/updImage/:id', tokens.isLoggedIn, user.updateUserImg);
 
+// Updates a user's information.
+router.put('/:id', tokens.isLoggedIn, user.updateUser);
+
 // Update a user's information and profile image
-router.put('/updAll/:id', tokens.isLoggedIn, user.updateUserAll);
+router.patch('/:id', tokens.isLoggedIn, user.updateUserAll);
 
 // Retrieves all user emails.
 router.get('/allEmails', user.getEmails);

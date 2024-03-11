@@ -23,7 +23,7 @@ const createPost = async (content, img, userId, date) => {
         date = new Date().toISOString();
 
     const post = new Post({
-        content: content, img: imageData, userId: userId,date:date
+        content: content, img: imageData, userId: userId, date: date
     });
 
     const savedPost = await post.save();
@@ -54,10 +54,10 @@ const getPostsByUser = async (id,requester) => {
     const posts = [];
     for (const post of temp) {
         const likeAmount = await Like.getLikeAmount(post._id);
-        const isLiked = await  Like.checkIfLike(requester,post._id);
+        const isLiked = await Like.checkIfLike(requester, post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
-        const postInfo = {"likeAmount" : likeAmount.likes, "isLiked" : isLiked, "postId": post._id.toString(), "commentsAmount" : commentsAmount, "userId" : id};
-        posts.push({"first":post,"second":postInfo})
+        const postInfo = { "likeAmount": likeAmount.likes, "isLiked": isLiked, "postId": post._id.toString(), "commentsAmount": commentsAmount, "userId": id };
+        posts.push({ "first": post, "second": postInfo })
     }
     return posts;
 };
@@ -70,7 +70,7 @@ const getPostsByUser = async (id,requester) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostContent = async (id, content) => {
-    return await Post.findOneAndUpdate({_id: id}, {content: content}, {new: true}).lean();
+    return await Post.findOneAndUpdate({ _id: id }, { content: content }, { new: true }).lean();
 };
 
 /**
@@ -81,7 +81,7 @@ const updatePostContent = async (id, content) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostImg = async (id, img) => {
-    return await Post.findOneAndUpdate({_id: id}, {img: img}, {new: true}).lean();
+    return await Post.findOneAndUpdate({ _id: id }, { img: img }, { new: true }).lean();
 
 };
 
@@ -94,7 +94,7 @@ const updatePostImg = async (id, img) => {
 const deletePost = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    await Post.deleteOne({_id : id});
+    await Post.deleteOne({ _id: id });
     return post;
 };
 
@@ -107,7 +107,7 @@ const deletePost = async (id) => {
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    return {userId: post.userId};
+    return { userId: post.userId };
 };
 
 /**
@@ -116,25 +116,31 @@ const getAuthor = async (id) => {
  * @returns {Promise} A Promise that resolves to an object containing the posts
  */
 const latestFivePost = async (id) => {
-    const friends = await fServices.getFriendsOfUser(id);
+    const friends = await fServices.getFriendsOfUserId(id);
     friends.push(id);
-    const postList = await Post.find({userId:{"$nin":friends}})
-        .sort({date: -1}).limit(5).lean()
+    const postList = await Post.find({ userId: { "$nin": friends } })
+        .sort({ date: -1 }).limit(5).lean()
     const postsMembers = [];
     for (const post of postList) {
         const member = await User.getUserById(post.userId);
         const likeAmount = await Like.getLikeAmount(post._id);
-        const isLiked = await  Like.checkIfLike(id,post._id);
+        const isLiked = await Like.checkIfLike(id, post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
-        const postInfo = {"likeAmount" : likeAmount.likes, "isLiked" : isLiked, "postId": post._id.toString(), "commentsAmount" : commentsAmount, "userId" : id};
-        postsMembers.push({"first":post,"second":member,"third":postInfo})
+        const postInfo = { "likeAmount": likeAmount.likes, "isLiked": isLiked, "postId": post._id.toString(), "commentsAmount": commentsAmount, "userId": id };
+        postsMembers.push({ "first": post, "second": member, "third": postInfo })
     }
     return postsMembers;
+}
+
+const deleteAllPostsByUser = async (id) => {
+    await Post.deleteMany({ userId: id });
+    return null;
 }
 
 
 
 module.exports = {
+    deleteAllPostsByUser,
     createPost,
     getPostById,
     getPostsByUser,

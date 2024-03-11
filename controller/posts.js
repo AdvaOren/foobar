@@ -12,7 +12,7 @@ const jwt = require("jsonwebtoken");
 const createPost = async (req, res) => {
     const author = await user.getUserById(req.params.id);
     const post = await posts.createPost(req.body.content, req.body.img, req.params.id, req.body.date)
-    res.json({...post, name: author.firstName + " " + author.lastName, profileImage: author.img});
+    res.json({ ...post, name: author.firstName + " " + author.lastName, profileImage: author.img });
 }
 /**
  * name:getPostById
@@ -27,10 +27,9 @@ const getPostById = async (req, res) => {
  * */
 const getPostsByUser = async (req, res) => {
     const userPosts = await posts.getPostsByUser(req.params.id,req.id);
-    if (userPosts === []) {
+    if (userPosts == []) {
         return res.status(404).json({errors: ['No posts found']});
     }
-    console.log(userPosts)
     res.json(userPosts)
 }
 /**
@@ -42,7 +41,7 @@ const updatePostContent = async (req, res) => {
     const author = await posts.getAuthor(req.params.pid);
     // check if request is valid
     if (author === null || req.params.id !== author.userId) {
-        return res.status(500).json({errors: ["unable to update, requester is not the author"]});
+        return res.status(500).json({ errors: ["unable to update, requester is not the author"] });
     }
     let result = {}
     if (req.body.img !== "") {
@@ -61,7 +60,7 @@ const updatePostContent = async (req, res) => {
 const updatePostImg = async (req, res) => {
     const author = await posts.getAuthor(req.params.pid);
     if (author === null || req.params.id !== author.id) {
-        return res.status(500).json({errors: ["unable to update, requester is not the author"]});
+        return res.status(500).json({ errors: ["unable to update, requester is not the author"] });
     }
     res.json(await posts.updatePostImg(req.params.id, req.body.img))
 }
@@ -80,10 +79,9 @@ const getAuthor = async (req, res) => {
 const get25Posts = async (req, res) => {
     let list = await posts.latestFivePost(req.id);
     list = list.concat(await friends.getLastPostOfFriends(req.id));
-    if (list === []) {
+    if (list == []) {
         return res.status(404).json({errors: ['No comments found']});
     }
-    console.log(list)
     res.json(list)
     /*const token = req.headers.authorization.split(" ")[1];
     // Assuming 'token' is the JWT token received from the server
@@ -103,14 +101,21 @@ const get25Posts = async (req, res) => {
 const deletePost = async (req, res) => {
     const postAuthor = await posts.getAuthor(req.params.pid)
     if (postAuthor === null || req.params.id !== postAuthor.userId) {
-        return res.status(500).json({errors: ["unable to delete, user is not the author"]});
+        return res.status(500).json({ errors: ["unable to delete, user is not the author"] });
     }
     const post = await posts.deletePost(req.params.pid);
     await like.removeLikesByPost(req.params.pid);
     await comment.deleteCommentsByPost(req.params.pid)
     res.json(post);
 }
+
+const deleteAllPostsByUser = async (id) => {
+    const post = await posts.deleteAllPostsByUser(id);
+    res.json(post);
+}
+
 module.exports = {
+    deleteAllPostsByUser,
     createPost,
     getPostById,
     getPostsByUser,
