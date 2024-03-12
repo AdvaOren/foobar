@@ -1,9 +1,16 @@
 const friend = require("../services/friend.js");
 const user = require("../services/user.js");
+const jwt = require("jsonwebtoken");
 
 const createFriends = async (req, res) => {
     //res.json(await friend.createFriends(req.body.requesterId, req.body.requestedId))
-    res.json(await friend.createFriends(req.id, req.params.id))
+    const token = req.headers.authorization.split(" ")[1];
+    // Assuming 'token' is the JWT token received from the server
+    const decodedToken = jwt.decode(token);
+
+    // Now you can access the username from the decoded token
+    const userId = decodedToken.id;
+    res.json(await friend.createFriends(userId, req.params.id))
 }
 const deleteFriends = async (req, res) => {
     res.json(await friend.deleteFriends(req.params.id, req.params.fid));

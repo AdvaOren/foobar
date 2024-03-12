@@ -14,7 +14,7 @@ router.post('/', user.createUser);
 router.get('/:email', user.getUserByEmail);
 
 // Finds a user by his ID.
-router.get('/:id', user.getUserById);
+// router.get('/:id', user.getUserById);
 
 
 // Updates a user's profile image.

@@ -18,14 +18,17 @@ async function createUser(req, res) {
 }
 
 const getUserByEmail = async (req, res) => {
-    const a = await user.getUserByEmail(req.params.email);
-    if (a !== null)
-        res.json(a);
-    else
-        res.json(await user.getUserById(req.params.email));
+    // const users = await user.getUserByEmail(req.params.email); 
+    // console.log("users", users);
+    // res.json("false");
+
+    const users = await user.getUserByEmail(req.params.email);
+    res.json(users || {}); // Return an empty object if user is null
+   
 };
 
 const getUserById = async (req, res) => {
+    console.log("here toooo");
     res.json(await user.getUserById(req.query.id));
 };
 const getEmails = async (req, res) => {
