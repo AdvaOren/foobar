@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 /**
  * name: createPost
  * action: creates post
+ * response: json obj of post
  * **/
 const createPost = async (req, res) => {
     const author = await user.getUserById(req.params.id);
@@ -17,6 +18,7 @@ const createPost = async (req, res) => {
 /**
  * name:getPostById
  * action: returns single post by its id
+ * response: json obj of post
  * */
 const getPostById = async (req, res) => {
     res.json(await posts.getPostById(req.params.pid))
@@ -24,6 +26,7 @@ const getPostById = async (req, res) => {
 /**
  * name:getPostsByUser
  * action: returns all posts of user
+ * response: json obj of all posts of user
  * */
 const getPostsByUser = async (req, res) => {
     const userPosts = await posts.getPostsByUser(req.params.id,req.id);
@@ -35,6 +38,7 @@ const getPostsByUser = async (req, res) => {
 /**
  * name: updatePostContent
  * action: updates post id content if and only if the requester is the author.
+ * response: json obj of updated post
  * **/
 const updatePostContent = async (req, res) => {
     //get author of post
@@ -56,6 +60,7 @@ const updatePostContent = async (req, res) => {
 /**
  * name: updatePostImg
  * action: updates post id img if and only if the requester is the author.
+ * response: json obj of updated post
  * **/
 const updatePostImg = async (req, res) => {
     const author = await posts.getAuthor(req.params.pid);
@@ -67,6 +72,7 @@ const updatePostImg = async (req, res) => {
 /**
  * name: getAuthor
  * action: gets the author of post by id.
+ * response: json obj of author of post
  * **/
 const getAuthor = async (req, res) => {
     res.json(await posts.getAuthor(req.params.pid))
@@ -75,6 +81,7 @@ const getAuthor = async (req, res) => {
 /**
  * func name: get25posts
  * action: returns 20 latest posts of friends and 5 latest posts in general
+ * response: json obj of list of posts
  * */
 const get25Posts = async (req, res) => {
     let list = await posts.latestFivePost(req.id);
@@ -97,6 +104,7 @@ const get25Posts = async (req, res) => {
 /**
  * func name: deletePost
  * action: delete post and its likes and comments.
+ * response: json obj of deleted post
  * **/
 const deletePost = async (req, res) => {
     const postAuthor = await posts.getAuthor(req.params.pid)
@@ -109,8 +117,13 @@ const deletePost = async (req, res) => {
     res.json(post);
 }
 
-const deleteAllPostsByUser = async (id) => {
-    const post = await posts.deleteAllPostsByUser(id);
+/**
+ * func name: deleteAllPostsByUser
+ * action: deletes all post of user
+ * response: json obj of posts
+ * **/
+const deleteAllPostsByUser = async (req,res) => {
+    const post = await posts.deleteAllPostsByUser(req.params.id);
     res.json(post);
 }
 

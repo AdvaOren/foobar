@@ -4,6 +4,11 @@ const postController = require("../controller/posts");
 const userController = require("../controller/users");
 const userService = require("../services/user");
 
+/**
+ * name: isLoggedIn
+ * action: checks if user is logged in by token
+ * response: moves to next tasks or response error
+ * **/
 const isLoggedIn = (req, res, next) => {
     // If the request has an authorization header
     if (req.headers.authorization) {
@@ -26,6 +31,11 @@ const isLoggedIn = (req, res, next) => {
     } else
         return res.status(403).send('Token required');
 }
+/**
+ * name: processLogin
+ * action: creates token for user login
+ * response: token in json obj
+ * **/
 const processLogin = async (req, res) => {
     // Check credentials
     if (await userService.findUserEx(req.body.id)) {
