@@ -122,7 +122,7 @@ const getFriendsOfUserId = async (user) => {
 
 const getFriendsOfUser = async (requester,requested) => {
     const areTheyFriends = await checkIfFriends(requester,requested)
-    if (!areTheyFriends) {
+    if (!areTheyFriends && requested !== requester) {
         return [];
     }
     const friends = await Friends.find({ requester: requester, status: "approve" }).lean();
@@ -210,7 +210,7 @@ const getLastPostOfFriends = async (id) => {
     for (const post of posts) {
         const member = await User.getUserById(post.userId);
         const likeAmount = await Like.getLikeAmount(post._id);
-        const isLiked = await Like.checkIfLike(post.userId, post._id);
+        const isLiked = await Like.checkIfLike(id, post._id);
         const commentsAmount = await Comment.getCommentsAmount(post._id);
         const postInfo = { "likeAmount": likeAmount.likes, "isLiked": isLiked, "postId": post._id.toString(), "commentsAmount": commentsAmount, "userId": id };
         postsMembers.push({ "first": post, "second": member, "third": postInfo })
