@@ -8,10 +8,10 @@ const Like = require('../models/Like');
  * @returns {Promise} A Promise that resolves to the created like.
  */
 const addLike = async (userId, postId) => {
-    const like = new Like({
+    const newLike = new Like({
         userId: userId, postId: postId
     });
-    return await like.save();
+    return await newLike.save();
 };
 
 /**
@@ -57,18 +57,20 @@ const removeLikesByUser = async (userId) => {
  */
 const checkIfLike = async (userId, postId) => {
     const like = await Like.findOne({userId: userId, postId: postId});
-    if (!like) return false;
+    if (!like) {
+        return false;
+    }
     return true;
 };
 
 /**
  * Retrieves the amount of likes by a user.
  *
- * @param {string} user - The ID of the user.
+ * @param {string} postId - The ID of the user.
  * @returns {Promise} A Promise that resolves to the number of likes.
  */
-const getLikeAmount = async (user) => {
-    const likes = await Like.find({userId: user});
+const getLikeAmount = async (postId) => {
+    const likes = await Like.find({postId: postId});
     return {likes: likes.length};
 };
 

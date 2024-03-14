@@ -2,15 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const baseRouter = require('./router/baseRouter.js');
+const router = require('./router/baseRouter');
+mongoose.connect('mongodb://localhost:27017/test_database', {useNewUrlParser: true, useUnifiedTopology: true});
 
-/*mongoose.connect(process.env.CONNECTION_STRING,
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true });*/
-
-var app = express();
+const app = express();
+app.use(express.static('public'))
 app.use(cors());
-app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.json());
-app.use('/', baseRouter);
+app.use('/', router);
+
+const server = app.listen(8080);
+// Set maxHeadersSize
+server.maxHeadersSize = 1024 * 1024; // Set the maximum header size in bytes

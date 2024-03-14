@@ -2,9 +2,12 @@ const express = require("express");
 const post = require("../controller/posts.js");
 const friend = require("../controller/friend.js");
 const router = express.Router();
+const tokens = require("../controller/tokens");
+const like = require("../controller/like");
+const comment = require("../controller/comment");
 
-//TODO last 25 posts GET
-// router.get('/posts', );
+//last 25 posts GET
+router.get('/', tokens.isLoggedIn,post.get25Posts);
 
 //TODO users/:id/posts GET
 
@@ -12,23 +15,40 @@ const router = express.Router();
 
 
 // Creates a new post.
-router.post('/users/:id/posts', post.createPost);
+router.post('/:id/posts', tokens.isLoggedIn, post.createPost);
 
 // Updates the content of a post.
-router.put('users/:id/posts/:pid', post.updatePostContent);
+router.put('/:id/posts/:pid', tokens.isLoggedIn, post.updatePostContent);
 
 // Deletes a post by its ID.
-router.delete('users/:id/posts/:pid', post.deletePost);
+router.delete('/:id/posts/:pid', tokens.isLoggedIn, post.deletePost);
 
 // Retrieves a post by its ID.
-router.get('users/:id/posts/:pid', post.getPostById);
+router.get('/:id/posts/:pid', tokens.isLoggedIn, post.getPostById);
 
-// Retrieves all posts.
-router.get('users/allPosts', post.getPosts);
+// Retrieves all posts of user.
+router.get('/:id/posts', tokens.isLoggedIn, post.getPostsByUser);
+
 
 // Retrieves the author of a post by post id.
-router.get('users/posts/:pid', post.getAuthor);
+router.get('/posts/:pid', tokens.isLoggedIn, post.getAuthor);
 
+//handle likes
+router.post(`/:id/posts/:pid/like/`, tokens.isLoggedIn, like.handleLike);
+
+//get comments of post
+router.get(`/:pid/comments`, tokens.isLoggedIn, comment.getCommentsByPost)
+
+//create comment of user id in post pid
+router.post(`/:id/posts/:pid/comments`, tokens.isLoggedIn, comment.createComment)
+
+//deletes comment by ID
+router.delete(`/:id/posts/:pid/comments/:cid`,tokens.isLoggedIn,comment.deleteCommentById)
+
+//update comment by ID
+router.put(`/:id/posts/:pid/comments/:cid`,tokens.isLoggedIn,comment.updateComment)
+
+module.exports = router
 
 
 

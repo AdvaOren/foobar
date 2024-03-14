@@ -1,5 +1,8 @@
 const Post = require('../models/post');
 const fServices = require('../services/friend');
+const User = require('./user');
+const Like = require('./like');
+const Comment = require('./comment');
 
 /**
  * Creates a new post.
@@ -7,16 +10,24 @@ const fServices = require('../services/friend');
  * @param {string} content - The content of the post.
  * @param {buffer} img - The image attached to the post.
  * @param {string} userId - The ID of the user who created the post.
- * @param {Date} [date] - Optional. The date of the post.
+ * @param {String} [date] - Optional. The date of the post.
  * @returns {Promise} A Promise that resolves to the created post.
  */
 const createPost = async (content, img, userId, date) => {
+    // Extract the image data from the Base64 string
+    const base64Data = img.replace(/^data:image\/\w+;base64,/, '');
+
+    // Convert the Base64 data to a Buffer
+    const imageData = Buffer.from(base64Data, 'base64');
+    if (date === undefined)
+        date = new Date().toISOString();
+
     const post = new Post({
-        content: content, img: img, userId: userId
+        content: content, img: imageData, userId: userId, date: date
     });
-    if (date)
-        post.date = date;
-    return await post.save();
+
+    const savedPost = await post.save();
+    return savedPost.toObject();
 };
 
 /**
@@ -27,7 +38,7 @@ const createPost = async (content, img, userId, date) => {
  */
 const getPostById = async (id) => {
     if (id.length !== 24) return null;
-    return await Post.findById(id);
+    return await Post.findById(id).lean();
 };
 
 /**
@@ -35,8 +46,20 @@ const getPostById = async (id) => {
  *
  * @returns {Promise} A Promise that resolves to an array of all posts of user.
  */
-const getPostsByUser = async (userId) => {
-    return await Post.find({userId: userId});
+const getPostsByUser = async (id,requester) => {
+    const areFriends = await fServices.checkIfFriends(requester,id);
+    if (!areFriends && id !== requester)
+        return ([])
+    const temp = await Post.find({userId: id}).sort({date: -1}).lean();
+    const posts = [];
+    for (const post of temp) {
+        const likeAmount = await Like.getLikeAmount(post._id);
+        const isLiked = await Like.checkIfLike(requester, post._id);
+        const commentsAmount = await Comment.getCommentsAmount(post._id);
+        const postInfo = { "likeAmount": likeAmount.likes, "isLiked": isLiked, "postId": post._id.toString(), "commentsAmount": commentsAmount, "userId": id };
+        posts.push({ "first": post, "second": postInfo })
+    }
+    return posts;
 };
 
 /**
@@ -47,11 +70,7 @@ const getPostsByUser = async (userId) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostContent = async (id, content) => {
-    const post = await getPostById(id);
-    if (!post) return null;
-    post.content = content;
-    await post.save();
-    return post;
+    return await Post.findOneAndUpdate({ _id: id }, { content: content }, { new: true }).lean();
 };
 
 /**
@@ -62,11 +81,8 @@ const updatePostContent = async (id, content) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostImg = async (id, img) => {
-    const post = await getPostById(id);
-    if (!post) return null;
-    post.img = img;
-    await post.save();
-    return post;
+    return await Post.findOneAndUpdate({ _id: id }, { img: img }, { new: true }).lean();
+
 };
 
 /**
@@ -78,7 +94,7 @@ const updatePostImg = async (id, img) => {
 const deletePost = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    await post.remove();
+    await Post.deleteOne({ _id: id });
     return post;
 };
 
@@ -91,7 +107,7 @@ const deletePost = async (id) => {
 const getAuthor = async (id) => {
     const post = await getPostById(id);
     if (!post) return null;
-    return {userId: post.userId};
+    return { userId: post.userId };
 };
 
 /**
@@ -100,16 +116,31 @@ const getAuthor = async (id) => {
  * @returns {Promise} A Promise that resolves to an object containing the posts
  */
 const latestFivePost = async (id) => {
-    const friends = await fServices.getFriendsOfUser(id);
+    const friends = await fServices.getFriendsOfUserId(id);
     friends.push(id);
-    const postList = await Post.find({userId:{"$nin":friends}})
-        .sort({date: -1}).limit(5).lean()
-    return postList;
+    const postList = await Post.find({ userId: { "$nin": friends } })
+        .sort({ date: -1 }).limit(5).lean()
+    const postsMembers = [];
+    for (const post of postList) {
+        const member = await User.getUserById(post.userId);
+        const likeAmount = await Like.getLikeAmount(post._id);
+        const isLiked = await Like.checkIfLike(id, post._id);
+        const commentsAmount = await Comment.getCommentsAmount(post._id);
+        const postInfo = { "likeAmount": likeAmount.likes, "isLiked": isLiked, "postId": post._id.toString(), "commentsAmount": commentsAmount, "userId": id };
+        postsMembers.push({ "first": post, "second": member, "third": postInfo })
+    }
+    return postsMembers;
+}
+
+const deleteAllPostsByUser = async (id) => {
+    await Post.deleteMany({ userId: id });
+    return null;
 }
 
 
 
 module.exports = {
+    deleteAllPostsByUser,
     createPost,
     getPostById,
     getPostsByUser,

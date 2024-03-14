@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const token = require('../controller/tokens');
 
 
+//move to process login
+router.post('/', token.processLogin);
 
-
-router.route("/")
-    .post();
+module.exports = router;

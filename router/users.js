@@ -1,46 +1,41 @@
 //route to user functions
 const express = require("express");
 const user = require("../controller/users.js");
+const tokens = require("../controller/tokens");
 
 const router = express.Router();
 
 
-//TODO add token
 
 // Create new user
-router.post('/users', user.createUser);
+router.post('/', user.createUser);
 
 // Finds a user by his email address.
-router.get('/users/:email', user.getUserByEmail);
+router.get('/:email', user.getUserByEmail);
 
 // Finds a user by his ID.
-router.get('/users/:email', user.getUserById);
+// router.get('/:id', user.getUserById);
 
-// Updates a user's information.
-router.put('/users/:id', user.updateUser);
 
 // Updates a user's profile image.
-router.put('/users/updImage/:id', user.updateUserImg);
+router.put('/updImage/:id', tokens.isLoggedIn, user.updateUserImg);
+
+// Updates a user's information.
+router.put('/:id', tokens.isLoggedIn, user.updateUser);
+
+// Update a user's information and profile image
+router.patch('/:id', tokens.isLoggedIn, user.updateUserAll);
 
 // Retrieves all user emails.
-router.get('/users/allEmails', user.getEmails);
+router.get('/allEmails', user.getEmails);
 
 // Deletes a user by his ID.
-router.delete('/users/:id', user.deleteUser);
+router.delete('/:id', tokens.isLoggedIn, user.deleteUser);
 
 // Deletes a user by his email address.
-router.delete('/users/:email', user.deleteUserByEmail);
+router.delete('/:email', tokens.isLoggedIn, user.deleteUserByEmail);
 
+// Finds if user exists by email and password
+router.get('/exists/:email/:password' , user.findUserExists);
 
-
-
-
-
-
-
-
-
-
-
-
-export default router;
+module.exports = router

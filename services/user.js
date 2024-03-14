@@ -12,11 +12,14 @@ const User = require('../models/User');
  */
 const createUser = async (email, firstName, lastName, password, img) => {
     // Check if the email already exists
-    if (getUserByEmail(email))
+    if (await getUserByEmail(email))
         return null;
+
     const user = new User({
         email: email, firstName: firstName, lastName: lastName, password: password,
-        img: img});
+        img: img
+    });
+
     return await user.save();
 };
 
@@ -27,7 +30,7 @@ const createUser = async (email, firstName, lastName, password, img) => {
  * @returns {Promise} A Promise that resolves to the user with the specified email.
  */
 const getUserByEmail = async (email) => {
-    return await User.findOne({email: email});
+    return await User.findOne({ email: email }).lean();
 };
 
 /**
@@ -37,9 +40,9 @@ const getUserByEmail = async (email) => {
  * @returns {Promise} A Promise that resolves to the user with the specified ID.
  */
 const getUserById = async (id) => {
-    if (id.size !== 24)
+    if (id.length !== 24)
         return null;
-    return await User.findById(id);
+    return await User.findById(id).lean();
 };
 
 /**
@@ -51,12 +54,33 @@ const getEmails = async () => {
     const userArray = await User.find({});
     let emailArray = [];
     if (!userArray)
-        return {emails: []};
+        return { emails: [] };
     userArray.forEach((value) => {
         emailArray.push(value.email);
     });
-    return {emails: emailArray};
+    return { emails: emailArray }.lean();
 };
+
+const getName = async (id) => {
+    const user = await User.findById(id);
+    if (user) {
+        // Concatenate firstName and lastName
+        return user.firstName + ' ' + user.lastName;
+    } else {
+        // User not found
+        return null;
+    }
+}
+
+const getImg = async (id) => {
+    const user = await User.findById(id).lean();
+    if (user) {
+        return user.img
+    } else {
+        // User not found
+        return null;
+    }
+}
 
 /**
  * Updates a user's information.
@@ -68,14 +92,14 @@ const getEmails = async () => {
  * @param {string} password - The user's password.
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
-const updateUser = async (id, email, firstName, lastName, password) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    user.email = email;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.password = password;
-    await user.save();
+const updateUser = async (id, firstName, lastName, password) => {
+    const user = await User.findOneAndUpdate(
+        { _id: id }, 
+        { firstName, lastName, password },
+    );
+    if (!user) {
+        return null;
+    }
     return user;
 };
 
@@ -87,10 +111,13 @@ const updateUser = async (id, email, firstName, lastName, password) => {
  * @returns {Promise} A Promise that resolves to the updated user or null if user not found.
  */
 const updateUserImg = async (id, img) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    user.img = img;
-    await user.save();
+    const user = await User.findOneAndUpdate(
+        { _id: id }, 
+        { img },
+    );
+    if (!user) {
+        return null;
+    }
     return user;
 };
 
@@ -101,10 +128,8 @@ const updateUserImg = async (id, img) => {
  * @returns {Promise} A Promise that resolves to the deleted user or null if user not found.
  */
 const deleteUser = async (id) => {
-    const user = await getUserById(id);
-    if (!user) return null;
-    await user.remove();
-    return user;
+    await User.findOneAndDelete({ _id: id });
+    return null;
 };
 
 /**
@@ -119,6 +144,16 @@ const deleteUserByEmail = async (email) => {
     await user.remove();
     return user;
 };
+/**
+ * Finds if user exists by email and password
+ *
+ * @param {string} email - The user's email.
+ * @param {string} password - the user's password
+ * @returns {Promise} A Promise that resolves to the user with the specified email.
+ */
+const findUserEx = async (id) => {
+    return await User.findOne({ _id: id }).lean();
+};
 
 module.exports = {
     createUser,
@@ -128,5 +163,8 @@ module.exports = {
     deleteUser,
     deleteUserByEmail,
     getEmails,
-    updateUserImg
+    updateUserImg,
+    findUserEx,
+    getName,
+    getImg
 };
