@@ -1,12 +1,13 @@
 const net = require('net');
 
 
-const port = process.env.PORT;
-const host = process.env.CONNECTION_STRING;
+
 let client = new net.Socket();
 let connected = false;
 
 function connect() {
+    const port = process.env.PORT;
+    const host = process.env.CONNECTION_STRING;
     return new Promise((resolve, reject) => {
         client.connect(port, host, () => {
             console.log('Connected to Bloom filter server');
@@ -39,8 +40,9 @@ function sendData(data) {
 async function init() {
     await connect();
     const blackList = process.env.BLACKLIST.toString().split(",");
+    await sendData(process.env.BLOOM_INIT);
     for (const url in blackList) {
-         await sendData("1 " + url);
+         await sendData("1 " + blackList[url]);
     }
 }
 
