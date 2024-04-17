@@ -1,79 +1,67 @@
 const net = require('net');
 
 
-class BloomFilter {
-    constructor() {
-        this.port = process.env.PORT;
-        this.host = process.env.CONNECTION_STRING;
-        this.client = new net.Socket();
-        this.connected = false;
-    }
+const port = process.env.PORT;
+const host = process.env.CONNECTION_STRING;
+let client = new net.Socket();
+let connected = false;
 
-    connect() {
-        return new Promise((resolve, reject) => {
-            this.client.connect(this.port, this.host, () => {
-                console.log('Connected to Bloom filter server');
-                this.connected = true;
-                resolve(); // Resolve the Promise when connected
-            });
-
-            this.client.on('error', (error) => {
-                console.error('Error:', error);
-                reject(error); // Reject the Promise on error
-            });
+function connect() {
+    return new Promise((resolve, reject) => {
+        client.connect(port, host, () => {
+            console.log('Connected to Bloom filter server');
+            connected = true;
+            resolve(); // Resolve the Promise when connected
         });
-    }
 
-    sendData(data) {
-        return new Promise((resolve, reject) => {
-            if (!this.connected) {
-                reject('Not connected to Bloom filter server');
-            } else {
-                this.client.write(data);
-                // Listen for data from the server
-                this.client.once('data', (data) => {
-                    console.log('Received data from Bloom filter server:', data.toString());
-                    resolve(data.toString());
-                });
-            }
+        client.on('error', (error) => {
+            console.error('Error:', error);
+            reject(error); // Reject the Promise on error
         });
-    }
+    });
+}
 
-   async init() {
-        await this.connect();
-        const blackList = process.env.BLACKLIST.toString().split(",");
-       for (const url in blackList) {
-           const responseData = await this.sendData("1 " + url);
-       }
+function sendData(data) {
+    return new Promise((resolve, reject) => {
+        if (!connected) {
+            reject('Not connected to Bloom filter server');
+        } else {
+            client.write(data);
+            // Listen for data from the server
+            client.once('data', (data) => {
+                console.log('Received data from Bloom filter server:', data.toString());
+                resolve(data.toString());
+            });
+        }
+    });
+}
+
+async function init() {
+    await connect();
+    const blackList = process.env.BLACKLIST.toString().split(",");
+    for (const url in blackList) {
+         await sendData("1 " + url);
     }
-    async checkBlackListed(content) {
-        if (!this.connected) {
-            await this.connect();
-            ///TODO: add init function
-            ///TODO: add blocked sites
-        }
-        const domainRegex = /(?:https?:\/\/)?(?:www\.)?([\w-]+(?:\.[\w-]+)+){2,}/g;
-        const domains = content.match(domainRegex);
-        let valid = true;
-        if (domains) {
-            for (const index in domains) {
-                const responseData = await this.sendData("2 "+domains[index]);
-                valid = responseData.toString().includes("false");
-                if (valid === false)
-                    break;
-            }
-        }
-        return valid;
+}
+
+async function checkBlackListed(content) {
+    if (!connected) {
+        await connect();
     }
-    // Singleton implementation
-   /* static getInstance() {
-        if (!BloomFilter.instance) {
-            BloomFilter.instance = new BloomFilter();
+    const domainRegex = /(?:https?:\/\/)?(?:www\.)?([\w-]+(?:\.[\w-]+)+){2,}/g;
+    const domains = content.match(domainRegex);
+    let valid = true;
+    if (domains) {
+        for (const index in domains) {
+            const responseData = await sendData("2 " + domains[index]);
+            valid = responseData.toString().includes("false");
+            if (valid === false)
+                break;
         }
-        return BloomFilter.instance;
-    }*/
+    }
+    return valid;
 }
 
 
 
-module.exports = BloomFilter;
+module.exports = {init, checkBlackListed}
