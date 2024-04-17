@@ -3,6 +3,9 @@ const fServices = require('../services/friend');
 const User = require('./user');
 const Like = require('./like');
 const Comment = require('./comment');
+const BloomFilter = require('../bloom_filter/socket');
+
+const bloomFilter = new BloomFilter();
 
 /**
  * Creates a new post.
@@ -14,6 +17,11 @@ const Comment = require('./comment');
  * @returns {Promise} A Promise that resolves to the created post.
  */
 const createPost = async (content, img, userId, date) => {
+    const valid = await bloomFilter.checkBlackListed(content)
+    if (valid === false) {
+        return null;
+    }
+
     // Extract the image data from the Base64 string
     const base64Data = img.replace(/^data:image\/\w+;base64,/, '');
 
@@ -70,6 +78,10 @@ const getPostsByUser = async (id,requester) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostContent = async (id, content) => {
+    const valid = await bloomFilter.checkBlackListed(content)
+    if (valid === false) {
+        return null;
+    }
     return await Post.findOneAndUpdate({ _id: id }, { content: content }, { new: true }).lean();
 };
 
