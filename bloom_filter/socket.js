@@ -3,8 +3,8 @@ const net = require('net');
 
 class BloomFilter {
     constructor() {
-        this.port = 5555;
-        this.host = '127.0.0.1';
+        this.port = process.env.PORT;
+        this.host = process.env.CONNECTION_STRING;
         this.client = new net.Socket();
         this.connected = false;
     }
@@ -39,6 +39,13 @@ class BloomFilter {
         });
     }
 
+   async init() {
+        await this.connect();
+        const blackList = process.env.BLACKLIST.toString().split(",");
+       for (const url in blackList) {
+           const responseData = await this.sendData("1 " + url);
+       }
+    }
     async checkBlackListed(content) {
         if (!this.connected) {
             await this.connect();
@@ -58,6 +65,13 @@ class BloomFilter {
         }
         return valid;
     }
+    // Singleton implementation
+   /* static getInstance() {
+        if (!BloomFilter.instance) {
+            BloomFilter.instance = new BloomFilter();
+        }
+        return BloomFilter.instance;
+    }*/
 }
 
 
