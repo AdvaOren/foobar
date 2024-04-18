@@ -50,12 +50,12 @@ async function checkBlackListed(content) {
     if (!connected) {
         await connect();
     }
-    const domainRegex = /(?:https?:\/\/)?(?:www\.)?([\w-]+(?:\.[\w-]+)+){2,}/g;
+    const domainRegex = /(?:https?:\/\/)?(?:www\.)?([\w-]+(?:\.[\w-]+)+)/g;
     const domains = content.match(domainRegex);
     let valid = true;
     if (domains) {
-        for (const index in domains) {
-            const responseData = await sendData("2 " + domains[index]);
+        for (let index in domains) {
+            let responseData = await sendData("2 " + domains[index]);
             valid = responseData.toString().includes("false");
             if (valid === false)
                 break;
