@@ -1,4 +1,4 @@
-const Post = require('../models/post');
+const Post = require('../models/Post');
 const fServices = require('../services/friend');
 const User = require('./user');
 const Like = require('./like');
