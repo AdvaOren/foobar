@@ -5,17 +5,11 @@ const tokens = require("../controller/tokens");
 
 const router = express.Router();
 
-
-
 // Create new user
 router.post('/', user.createUser);
 
 // Finds a user by his email address.
 router.get('/:email', user.getUserByEmail);
-
-// Finds a user by his ID.
-// router.get('/:id', user.getUserById);
-
 
 // Updates a user's profile image.
 router.put('/updImage/:id', tokens.isLoggedIn, user.updateUserImg);

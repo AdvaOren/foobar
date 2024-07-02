@@ -1,5 +1,7 @@
 # foobar_DAT_server
 אופן הרצת הקוד: ראשית יש להוריד את הקוד מהרפוסיטורי, מכיוון ולקוד יש תלויות בספריות יש להריץ npm i , לאחר התתקנה להרצה אפשר להריץ את הפקודה npm start (אמור להיות סקריפט בקוד שמאפשר זאת) או node app.js.
+בנוסף יש להריץ npm i custom-env
+לאחר הרצת Bloom filter ניתן להריץ שרת זה על ידי הפקודה NODE_ENV=local node app.js
 
 השרת מניח שיש מונגו דיבי מותקן ומתחבר למונגו עם הconnection string הבא: 'mongodb://localhost:27017/test_database' ולכן צריך שזה יהיה הconnection string על המונגו של המריץ את השרת.
 

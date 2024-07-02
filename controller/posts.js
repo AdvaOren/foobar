@@ -3,7 +3,6 @@ const friends = require("../services/friend");
 const like = require("../services/like.js");
 const comment = require("../services/comment.js");
 const user = require("../services/user");
-const jwt = require("jsonwebtoken");
 
 /**
  * name: createPost
@@ -13,7 +12,10 @@ const jwt = require("jsonwebtoken");
 const createPost = async (req, res) => {
     const author = await user.getUserById(req.params.id);
     const post = await posts.createPost(req.body.content, req.body.img, req.params.id, req.body.date)
-    res.json({ ...post, name: author.firstName + " " + author.lastName, profileImage: author.img });
+    if (post === null)
+        res.status(400).send("invalid url in post content");
+    else
+        res.json({ ...post, name: author.firstName + " " + author.lastName, profileImage: author.img });
 }
 /**
  * name:getPostById
@@ -54,7 +56,10 @@ const updatePostContent = async (req, res) => {
     if (req.body.content !== "") {
         result = await posts.updatePostContent(req.params.pid, req.body.content)
     }
-    res.json(result);
+    if (result === null)
+        res.status(400).send("invalid url in post content");
+    else
+        res.json(result);
 }
 
 /**
@@ -90,16 +95,6 @@ const get25Posts = async (req, res) => {
         return res.status(404).json({errors: ['No comments found']});
     }
     res.json(list)
-    /*const token = req.headers.authorization.split(" ")[1];
-    // Assuming 'token' is the JWT token received from the server
-    const decodedToken = jwt.decode(token);
-
-    // Now you can access the username from the decoded token
-    const userId = decodedToken.id;
-    let list = await posts.latestFivePost(userId);
-    list = list.concat(await friends.getLastPostOfFriends(userId));*/
-
-
 }
 /**
  * func name: deletePost

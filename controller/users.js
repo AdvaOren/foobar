@@ -1,7 +1,7 @@
 const user = require("../services/user.js");
 const like = require("../services/like");
 const comment = require("../services/comment");
-const post = require("../models/post.js");
+const post = require("../models/Post.js");
 const friend = require("../services/friend.js");
 const posts = require("../services/post.js");
 

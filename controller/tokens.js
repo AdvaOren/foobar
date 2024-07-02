@@ -1,7 +1,5 @@
 const jwt = require("jsonwebtoken");
 const key = "Some super secret key!!!!!"
-const postController = require("../controller/posts");
-const userController = require("../controller/users");
 const userService = require("../services/user");
 
 /**
