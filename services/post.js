@@ -93,7 +93,12 @@ const updatePostContent = async (id, content) => {
  * @returns {Promise} A Promise that resolves to the updated post or null if post not found.
  */
 const updatePostImg = async (id, img) => {
-    return await Post.findOneAndUpdate({ _id: id }, { img: img }, { new: true }).lean();
+    // Extract the image data from the Base64 string
+    const base64Data = img.replace(/^data:image\/\w+;base64,/, '');
+
+    // Convert the Base64 data to a Buffer
+    const imageData = Buffer.from(base64Data, 'base64');
+    return await Post.findOneAndUpdate({ _id: id }, { img: imageData }, { new: true }).lean();
 
 };
 
