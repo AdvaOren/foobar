@@ -1,10 +1,10 @@
-# foobar_DAT_server
-אופן הרצת הקוד: ראשית יש להוריד את הקוד מהרפוסיטורי, מכיוון ולקוד יש תלויות בספריות יש להריץ npm i , לאחר התתקנה להרצה אפשר להריץ את הפקודה npm start (אמור להיות סקריפט בקוד שמאפשר זאת) או node app.js.
-בנוסף יש להריץ npm i custom-env
-לאחר הרצת Bloom filter ניתן להריץ שרת זה על ידי הפקודה NODE_ENV=local node app.js
+# Foobar
 
-השרת מניח שיש מונגו דיבי מותקן ומתחבר למונגו עם הconnection string הבא: 'mongodb://localhost:27017/test_database' ולכן צריך שזה יהיה הconnection string על המונגו של המריץ את השרת.
+In this project, we have developed a Facebook-like application within a client-server environment.
 
-השרת מאזין לפורט 8080 ולכן שם יימצא אתר הווב (localhost:8080).
+For the client-side implementation, we utilized React.js along with HTML and CSS languages.
 
-להסבר על התחברות לאנרואיד יש ללכת לרפו של האנרואיד שהוגשה עם הקובץ DETAILS.
+The client environment communicates with a Node.js server, which in turn interacts with another C++ server. This C++ server is responsible for validating the links embedded within the text of a post to determine if they are potentially malicious.<br>
+
+The whole process of installing and running the project is in the wiki above. Enjoy!<br>
+
