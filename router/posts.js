@@ -9,11 +9,6 @@ const comment = require("../controller/comment");
 //last 25 posts GET
 router.get('/', tokens.isLoggedIn,post.get25Posts);
 
-//TODO users/:id/posts GET
-
-//TODO Add route to update content and image
-
-
 // Creates a new post.
 router.post('/:id/posts', tokens.isLoggedIn, post.createPost);
 
